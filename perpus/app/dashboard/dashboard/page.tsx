@@ -6,13 +6,15 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { BookOpen, Users, Settings, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import ChartDashboard from "@/components/ui/chart";
+
+// Import chart yang sudah dibuat sebelumnya
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Decode token (gunakan js-cookie atau logic serupa)
     setUser({ role: "admin" }); // Placeholder
   }, []);
 
@@ -39,6 +41,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Judul Dashboard */}
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -46,6 +49,8 @@ export default function DashboardPage() {
       >
         Dashboard
       </motion.h1>
+
+      {/* Statistik utama */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <motion.div
@@ -70,10 +75,21 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Chart Pengunjung & Peminjam */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
+      >
+        <ChartDashboard />
+      </motion.div>
+
+      {/* Panel Kelola Buku dan Peminjaman */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl border-0">
@@ -108,6 +124,7 @@ export default function DashboardPage() {
             </Button>
           </CardContent>
         </Card>
+
         {user?.role === "admin" && (
           <Card className="bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl border-0 md:col-span-2">
             <CardHeader>
