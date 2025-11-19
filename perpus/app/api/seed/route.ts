@@ -6,13 +6,11 @@ export async function GET() {
     // Seed Category
     await prisma.category.createMany({
       data: [{ name: "Fiksi" }, { name: "Non-Fiksi" }, { name: "Teknologi" }],
-      skipDuplicates: true,
     });
 
     // Seed Shelf
     await prisma.shelf.createMany({
       data: [{ name: "Rak A" }, { name: "Rak B" }, { name: "Rak C" }],
-      skipDuplicates: true,
     });
 
     // Ambil kategori & rak
@@ -35,8 +33,19 @@ export async function GET() {
             categoryId: cat1.id,
             shelfId: shelf1.id,
           },
+          {
+            title: "Madilog",
+            author: "James Clear",
+            categoryId: cat1.id,
+            shelfId: shelf1.id,
+          },
+          {
+            title: "bottle",
+            author: "Robert C. Martin",
+            categoryId: cat1.id,
+            shelfId: shelf1.id,
+          },
         ],
-        skipDuplicates: true,
       });
     }
 

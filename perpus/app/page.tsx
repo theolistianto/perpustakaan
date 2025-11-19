@@ -6,7 +6,7 @@ import BooksPage from "./dashboard/books/page";
 export default function Home() {
   return (
     <div>
-      <BooksPage></BooksPage>
+      <DashboardPage></DashboardPage>
     </div>
   );
 }

@@ -16,34 +16,44 @@ export default function BooksPage() {
   const [books, setBooks] = useState<any[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<any[]>([]);
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [shelfFilter, setShelfFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [shelfFilter, setShelfFilter] = useState("all");
 
   useEffect(() => {
     fetch("/api/books")
-      .then((res) => res.json())
-      .then((data) => {
+      .then(async (res) => {
+        const raw = await res.text();
+        console.log("RAW API:", raw);
+        const data = JSON.parse(raw);
+
         if (!Array.isArray(data)) {
           console.error("API error:", data);
           return;
         }
+
         setBooks(data);
         setFilteredBooks(data);
       })
       .catch((err) => console.error("Fetch error:", err));
   }, []);
+
   useEffect(() => {
     let filtered = books.filter(
       (book) =>
         book.title.toLowerCase().includes(search.toLowerCase()) ||
         book.author.toLowerCase().includes(search.toLowerCase())
     );
-    if (categoryFilter)
+
+    if (categoryFilter !== "all") {
       filtered = filtered.filter(
         (book) => book.category.name === categoryFilter
       );
-    if (shelfFilter)
+    }
+
+    if (shelfFilter !== "all") {
       filtered = filtered.filter((book) => book.shelf.name === shelfFilter);
+    }
+
     setFilteredBooks(filtered);
   }, [search, categoryFilter, shelfFilter, books]);
 
@@ -59,6 +69,7 @@ export default function BooksPage() {
       >
         Daftar Buku
       </motion.h1>
+
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -69,12 +80,14 @@ export default function BooksPage() {
             className="pl-10"
           />
         </div>
-        <Select onValueChange={setCategoryFilter}>
+
+        {/* CATEGORY SELECT */}
+        <Select onValueChange={setCategoryFilter} defaultValue="all">
           <SelectTrigger className="w-full md:w-48">
             <SelectValue placeholder="Filter Kategori" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Semua Kategori</SelectItem>
+            <SelectItem value="all">Semua Kategori</SelectItem>
             {categories.map((cat) => (
               <SelectItem key={cat} value={cat}>
                 {cat}
@@ -82,12 +95,14 @@ export default function BooksPage() {
             ))}
           </SelectContent>
         </Select>
-        <Select onValueChange={setShelfFilter}>
+
+        {/* SHELF SELECT */}
+        <Select onValueChange={setShelfFilter} defaultValue="all">
           <SelectTrigger className="w-full md:w-48">
             <SelectValue placeholder="Filter Rak" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Semua Rak</SelectItem>
+            <SelectItem value="all">Semua Rak</SelectItem>
             {shelves.map((shelf) => (
               <SelectItem key={shelf} value={shelf}>
                 {shelf}
@@ -96,6 +111,7 @@ export default function BooksPage() {
           </SelectContent>
         </Select>
       </div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -141,6 +157,7 @@ export default function BooksPage() {
           </motion.div>
         ))}
       </motion.div>
+
       {filteredBooks.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}

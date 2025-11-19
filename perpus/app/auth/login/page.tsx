@@ -27,7 +27,7 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password, role }),
     });
     if (res.ok) {
-      router.push("/dashboard");
+      router.push("/dashboard/dashboard");
     } else {
       alert("Login failed");
     }

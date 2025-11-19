@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { BookOpen, Users, Settings, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -116,9 +117,11 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
-                Kelola Sistem
-              </Button>
+              <Link href="">
+                <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
+                  Kelola Sistem
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         )}
