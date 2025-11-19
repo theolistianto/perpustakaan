@@ -23,11 +23,15 @@ export default function BooksPage() {
     fetch("/api/books")
       .then((res) => res.json())
       .then((data) => {
+        if (!Array.isArray(data)) {
+          console.error("API error:", data);
+          return;
+        }
         setBooks(data);
         setFilteredBooks(data);
-      });
+      })
+      .catch((err) => console.error("Fetch error:", err));
   }, []);
-
   useEffect(() => {
     let filtered = books.filter(
       (book) =>
