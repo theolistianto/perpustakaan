@@ -41,15 +41,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Judul Dashboard */}
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-      >
-        Dashboard
-      </motion.h1>
-
       {/* Statistik utama */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
@@ -85,14 +76,13 @@ export default function DashboardPage() {
         <ChartDashboard />
       </motion.div>
 
-      {/* Panel Kelola Buku dan Peminjaman */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl border-0">
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl border-0 hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center">
               <BookOpen className="mr-2 h-6 w-6" />
@@ -102,13 +92,13 @@ export default function DashboardPage() {
           <CardContent>
             <Button
               onClick={() => router.push("/books")}
-              className="bg-white text-indigo-600 hover:bg-gray-100 font-semibold"
+              className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl border-0"
             >
               Lihat Buku
             </Button>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-xl border-0">
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl border-0 hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Users className="mr-2 h-6 w-6" />
@@ -118,7 +108,7 @@ export default function DashboardPage() {
           <CardContent>
             <Button
               onClick={() => router.push("/borrow")}
-              className="bg-white text-green-600 hover:bg-gray-100 font-semibold"
+              className="bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-xl border-0"
             >
               Pinjam Buku
             </Button>
@@ -126,7 +116,7 @@ export default function DashboardPage() {
         </Card>
 
         {user?.role === "admin" && (
-          <Card className="bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl border-0 md:col-span-2">
+          <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl border-0 hover:shadow-2xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Settings className="mr-2 h-6 w-6" />
@@ -135,7 +125,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Link href="">
-                <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
+                <Button className="bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl border-0 md:col-span-2">
                   Kelola Sistem
                 </Button>
               </Link>

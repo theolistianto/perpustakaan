@@ -69,7 +69,6 @@ export default function BooksPage() {
       >
         Daftar Buku
       </motion.h1>
-
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />

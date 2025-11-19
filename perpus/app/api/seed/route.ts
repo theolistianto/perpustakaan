@@ -48,7 +48,6 @@ export async function GET() {
         ],
       });
     }
-
     return NextResponse.json({ message: "Seed sukses!" });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
