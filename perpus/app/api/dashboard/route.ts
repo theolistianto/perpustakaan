@@ -4,30 +4,26 @@ import { prisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStart = new Date();
+    todayStart.setHours(0,0,0,0);
 
-    // Total peminjam dan peminjaman hari ini
-    const totalBorrows = await prisma.borrow.count();
-    const totalUsers = await prisma.user.count({ where: { role: "member" } });
-    const borrowsToday = await prisma.borrow.count({
-      where: { borrowDate: { gte: today } },
-    });
+    // stats
+    const totalBorrows = await prisma.borrow.count(); // total peminjaman
+    const totalMembers = await prisma.user.count({ where: { role: "member" } });
+    const borrowsToday = await prisma.borrow.count({ where: { borrowDate: { gte: todayStart } } });
 
-    // Ambil semua peminjaman untuk chart
-    const borrowings = await prisma.borrow.findMany({
-      select: { borrowDate: true },
-    });
-
-    const monthlyData = borrowings.reduce((acc, b) => {
-      const month = b.borrowDate.toISOString().slice(0, 7);
+    // chart: monthly borrow counts (last 12 months)
+    const borrowings = await prisma.borrow.findMany({ select: { borrowDate: true } });
+    const monthlyMap = borrowings.reduce((acc: Record<string, number>, b) => {
+      const month = b.borrowDate.toISOString().slice(0,7);
       acc[month] = (acc[month] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
+    const chart = Object.entries(monthlyMap).map(([month, count]) => ({ month, count }));
 
-    // Ambil daftar peminjaman aktif untuk tabel
+    // table: active borrows (accepted and not returned)
     const activeBorrows = await prisma.borrow.findMany({
-      where: { status: "accepted" },
+      where: { status: "accepted", returnDate: null },
       include: {
         user: { select: { id: true, name: true } },
         book: { include: { category: true, shelf: true } },
@@ -35,30 +31,24 @@ export async function GET() {
       orderBy: { borrowDate: "desc" },
     });
 
+    const table = activeBorrows.map(b => ({
+      id: b.id,
+      user: b.user.name,
+      jenisBuku: b.book.category?.name ?? "-",
+      temaBuku: b.book.title,
+      rak: b.book.shelf?.name ?? "-",
+      jumlah: 1, // karena model menyimpan satu record per buku. Jika memungkinkan multiple quantity, perlu field qty
+      borrowDate: b.borrowDate,
+      dueDate: b.dueDate
+    }));
+
     return NextResponse.json({
-      stats: {
-        totalBorrows,
-        totalUsers,
-        borrowsToday,
-      },
-      chart: Object.entries(monthlyData).map(([month, count]) => ({
-        month,
-        count,
-      })),
-      table: activeBorrows.map((b) => ({
-        id: b.id,
-        user: b.user.name,
-        jenisBuku: b.book.category.name,
-        temaBuku: b.book.title,
-        rak: b.book.shelf.name,
-        jumlah: b.book.stock, // atau totalStock tergantung kebutuhan
-      })),
+      stats: { totalBorrows, totalMembers, borrowsToday },
+      chart,
+      table
     });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: "Gagal mengambil data dashboard" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Gagal mengambil data dashboard" }, { status: 500 });
   }
 }
