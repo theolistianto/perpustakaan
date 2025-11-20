@@ -9,9 +9,9 @@ export default function Sidebar() {
   const router = useRouter();
 
   const menuItems = [
-    { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
-    { icon: BookOpen, label: "Buku", path: "/books" },
-    { icon: Users, label: "Anggota", path: "/members" },
+    { icon: BarChart3, label: "Dashboard", path: "/dashboard/dashboard" },
+    { icon: BookOpen, label: "Buku", path: "/dashboard/books" },
+    { icon: Users, label: "Peminjam", path: "/dashboard/peminjam" },
   ];
 
   return (

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function PeminjamanPage() {
   const [borrowings, setBorrowings] = useState([]);
@@ -71,12 +72,9 @@ export default function PeminjamanPage() {
           <CardTitle>Filter Peminjaman</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3 items-end">
-          <Button
-            className="bg-blue-600 text-white"
-            onClick={() => setShowAdd(true)}
-          >
-            + Tambah Pinjam
-          </Button>
+          <Link href="/dashboard/peminjam/tamabah">
+            <Button className="bg-blue-600 text-white">+ Tambah Pinjam</Button>
+          </Link>
 
           <div>
             <label>Bulan</label>
@@ -183,18 +181,14 @@ export default function PeminjamanPage() {
               className="border p-2 w-full rounded"
               placeholder="ID Anggota"
               type="number"
-              onChange={(e) =>
-                setForm({ ...form, userId: Number(e.target.value) })
-              }
+              onChange={(e) => setForm({ ...form, userId: e.target.value })}
             />
 
             <input
               className="border p-2 w-full rounded"
               placeholder="ID Buku"
               type="number"
-              onChange={(e) =>
-                setForm({ ...form, bookId: Number(e.target.value) })
-              }
+              onChange={(e) => setForm({ ...form, bookId: e.target.value })}
             />
 
             <input
@@ -208,7 +202,6 @@ export default function PeminjamanPage() {
               className="border p-2 w-full rounded"
               onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
             />
-
             <div className="flex justify-end gap-2">
               <Button variant="secondary" onClick={() => setShowAdd(false)}>
                 Batal
