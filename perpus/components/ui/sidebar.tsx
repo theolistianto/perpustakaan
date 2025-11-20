@@ -12,6 +12,7 @@ export default function Sidebar() {
     { icon: BarChart3, label: "Dashboard", path: "/dashboard/dashboard" },
     { icon: BookOpen, label: "Buku", path: "/dashboard/books" },
     { icon: Users, label: "Peminjam", path: "/dashboard/peminjam" },
+    { icon: BookOpen, label: "peminjaman saya", path: "/dashboard/borrow" },
   ];
 
   return (

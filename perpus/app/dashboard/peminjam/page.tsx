@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { DivideSquareIcon } from "lucide-react";
 
 export default function PeminjamanPage() {
   const [borrowings, setBorrowings] = useState([]);
