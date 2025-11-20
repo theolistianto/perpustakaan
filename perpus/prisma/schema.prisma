@@ -17,14 +17,16 @@ model User {
 }
 
 model Book {
-  id          Int      @id @default(autoincrement())
-  title       String
-  author      String
-  categoryId  Int
-  shelfId     Int
-  category    Category @relation(fields: [categoryId], references: [id])
-  shelf       Shelf    @relation(fields: [shelfId], references: [id])
-  borrows     Borrow[]
+  id         Int      @id @default(autoincrement())
+  title      String
+  author     String
+  categoryId Int
+  shelfId    Int
+  stock      Int      @default(0)   // <--- harus ada
+  totalStock Int      @default(0)
+  category   Category @relation(fields: [categoryId], references: [id])
+  shelf      Shelf    @relation(fields: [shelfId], references: [id])
+  borrows    Borrow[]
 }
 
 model Category {

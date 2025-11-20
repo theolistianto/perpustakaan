@@ -1,12 +1,13 @@
 import Image from "next/image";
-import DashboardPage from "./dashboard/dashboard/page";
 import LoginPage from "./auth/login/page";
 import BooksPage from "./dashboard/books/page";
+import DashboardPage from "./dashboard/peminjam/page";
+import AdminBorrowRequests from "./dashboard/peminjam/page";
 
 export default function Home() {
   return (
     <div>
-      <DashboardPage></DashboardPage>
+      <AdminBorrowRequests></AdminBorrowRequests>
     </div>
   );
 }

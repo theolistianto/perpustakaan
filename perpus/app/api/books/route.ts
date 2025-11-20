@@ -1,37 +1,61 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-// GET semua buku
-export async function GET() {
-  const books = await prisma.book.findMany({
-    include: { category: true, shelf: true },
-  });
-  return NextResponse.json(books);
+// GET: ambil daftar buku dengan filter search dan category
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search") || "";
+    const categoryId = searchParams.get("categoryId");
+
+    const books = await prisma.book.findMany({
+      where: {
+        AND: [
+          { title: { contains: search, mode: "insensitive" } },
+          categoryId ? { categoryId: parseInt(categoryId) } : {},
+        ],
+      },
+      include: { category: true, shelf: true },
+    });
+
+    return NextResponse.json(books);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Gagal mengambil buku" },
+      { status: 500 }
+    );
+  }
 }
 
-// POST tambah buku baru
-export async function POST(req: Request) {
+// POST: buat buku baru
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const { title, author, categoryId, shelfId, stock, totalStock } =
+      await req.json();
 
-    if (!body.title || !body.author || !body.categoryId || !body.shelfId) {
+    // Validasi minimal
+    if (!title || !author || !categoryId || !shelfId || stock === undefined) {
       return NextResponse.json(
-        { error: "title, author, categoryId, shelfId wajib diisi" },
+        { error: "Data tidak lengkap" },
         { status: 400 }
       );
     }
 
     const book = await prisma.book.create({
       data: {
-        title: body.title,
-        author: body.author,
-        categoryId: body.categoryId,
-        shelfId: body.shelfId,
+        title,
+        author,
+        categoryId,
+        shelfId,
+        stock,
+        totalStock: totalStock ?? stock, // default totalStock sama dengan stock
       },
     });
 
     return NextResponse.json(book);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Gagal membuat buku" }, { status: 500 });
   }
 }
