@@ -46,10 +46,11 @@ model Borrow {
   userId     Int
   bookId     Int
   borrowDate DateTime @default(now())
-  dueDate    DateTime?   // <-- WAJIB ADA agar tidak error
+  dueDate    DateTime
   returnDate DateTime?
-  status     String   @default("pending")
-  fine       Int?
-  user       User     @relation(fields: [userId], references: [id])
-  book       Book     @relation(fields: [bookId], references: [id])
+  status     String   @default("borrowed")  // pending, borrowed, returned
+  fine       Int      @default(0)
+
+  user  User @relation(fields: [userId], references: [id])
+  book  Book @relation(fields: [bookId], references: [id])
 }
