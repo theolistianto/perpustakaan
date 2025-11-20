@@ -1,80 +1,112 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 
-type BorrowRequest = {
-  id: number;
-  user: { id: number; name: string };
-  book: { id: number; title: string };
-  borrowDate: string;
-  returnDate: string | null;
+type DashboardData = {
+  stats: {
+    totalBorrows: number;
+    totalUsers: number;
+    borrowsToday: number;
+  };
+  chart: { month: string; count: number }[];
+  table: {
+    id: number;
+    user: string;
+    jenisBuku: string;
+    temaBuku: string;
+    rak: string;
+    jumlah: number;
+  }[];
 };
 
-export default function AdminBorrowRequests() {
-  const [requests, setRequests] = useState<BorrowRequest[]>([]);
-  const [loadingId, setLoadingId] = useState<number | null>(null);
-
-  const fetchRequests = async () => {
-    const res = await fetch("/api/borrow/requests");
-    const data = await res.json();
-    setRequests(data);
-  };
+export default function AdminDashboard() {
+  const [data, setData] = useState<DashboardData>({
+    stats: { totalBorrows: 0, totalUsers: 0, borrowsToday: 0 },
+    chart: [],
+    table: [],
+  });
 
   useEffect(() => {
-    fetchRequests();
+    fetch("/api/dashboard")
+      .then((res) => res.json())
+      .then(setData)
+      .catch(console.error);
   }, []);
 
-  const handleDecision = async (id: number, accept: boolean) => {
-    setLoadingId(id);
-    try {
-      await fetch(`/api/borrow/${id}/decision`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accept }),
-      });
-      fetchRequests(); // refresh list
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingId(null);
-    }
-  };
-
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-bold text-blue-600">Request Peminjaman</h1>
-      {requests.length === 0 && <p>Tidak ada request baru.</p>}
-      {requests.map((req) => (
-        <Card key={req.id} className="bg-white/90 shadow-md">
-          <CardHeader>
-            <CardTitle>{req.book.title}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              <p>Anggota: {req.user.name}</p>
-              <p>Pinjam: {new Date(req.borrowDate).toLocaleDateString()}</p>
-              <p>Kembali: {req.returnDate ? new Date(req.returnDate).toLocaleDateString() : "-"}</p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => handleDecision(req.id, true)}
-                disabled={loadingId === req.id}
-                className="bg-green-500 hover:bg-green-600 text-white"
-              >
-                Terima
-              </Button>
-              <Button
-                onClick={() => handleDecision(req.id, false)}
-                disabled={loadingId === req.id}
-                className="bg-red-500 hover:bg-red-600 text-white"
-              >
-                Tolak
-              </Button>
-            </div>
-          </CardContent>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-blue-600">Dashboard Admin</h1>
+
+      {/* Statistik */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader><CardTitle>Total Peminjam</CardTitle></CardHeader>
+          <CardContent>{data.stats.totalBorrows}</CardContent>
         </Card>
-      ))}
+        <Card>
+          <CardHeader><CardTitle>Total Anggota</CardTitle></CardHeader>
+          <CardContent>{data.stats.totalUsers}</CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Pengunjung Hari Ini</CardTitle></CardHeader>
+          <CardContent>{data.stats.borrowsToday}</CardContent>
+        </Card>
+      </div>
+
+      {/* Chart */}
+      <Card>
+        <CardHeader><CardTitle>Peminjaman Per Bulan</CardTitle></CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data.chart}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Table Peminjaman Aktif */}
+      <Card>
+        <CardHeader><CardTitle>Daftar Peminjaman Aktif</CardTitle></CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border border-gray-200">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 border">ID</th>
+                  <th className="px-4 py-2 border">User</th>
+                  <th className="px-4 py-2 border">Jenis Buku</th>
+                  <th className="px-4 py-2 border">Tema Buku</th>
+                  <th className="px-4 py-2 border">Rak</th>
+                  <th className="px-4 py-2 border">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.table.map((row) => (
+                  <tr key={row.id} className="text-center">
+                    <td className="border px-4 py-2">{row.id}</td>
+                    <td className="border px-4 py-2">{row.user}</td>
+                    <td className="border px-4 py-2">{row.jenisBuku}</td>
+                    <td className="border px-4 py-2">{row.temaBuku}</td>
+                    <td className="border px-4 py-2">{row.rak}</td>
+                    <td className="border px-4 py-2">{row.jumlah}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

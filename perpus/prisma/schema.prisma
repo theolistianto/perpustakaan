@@ -1,17 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
   password String
-  role     String   // "member" or "admin"
+  role     String
   name     String
   borrows  Borrow[]
 }
@@ -22,7 +22,7 @@ model Book {
   author     String
   categoryId Int
   shelfId    Int
-  stock      Int      @default(0)   // <--- harus ada
+  stock      Int      @default(0)
   totalStock Int      @default(0)
   category   Category @relation(fields: [categoryId], references: [id])
   shelf      Shelf    @relation(fields: [shelfId], references: [id])
@@ -42,11 +42,13 @@ model Shelf {
 }
 
 model Borrow {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   userId     Int
   bookId     Int
-  borrowDate DateTime @default(now())
+  borrowDate DateTime  @default(now())
   returnDate DateTime?
-  user       User     @relation(fields: [userId], references: [id])
-  book       Book     @relation(fields: [bookId], references: [id])
+  fine       Int?
+  status     String    @default("pending")
+  book       Book      @relation(fields: [bookId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
 }
