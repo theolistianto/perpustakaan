@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { BookOpen, Heart, Share2, X, CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface Book {
@@ -29,7 +28,6 @@ interface Category {
 }
 
 export default function BookCategoryPage() {
-  const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -96,6 +94,14 @@ export default function BookCategoryPage() {
   const handleBorrowClick = (e: React.MouseEvent, book: Book) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!userEmail) {
+      alert("Silakan login terlebih dahulu untuk meminjam buku");
+      return;
+    }
+    if (book.stock === 0) {
+      alert("Stok buku tidak tersedia");
+      return;
+    }
     setSelectedBook(book);
     setShowModal(true);
   };
@@ -276,20 +282,17 @@ export default function BookCategoryPage() {
                     </h3>
                   </div>
 
-                  {userRole === "member" && book.stock > 0 && (
-                    <button
-                      onClick={(e) => handleBorrowClick(e, book)}
-                      className="w-full py-2 px-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold text-sm transition"
-                    >
-                      Ajukan Peminjaman
-                    </button>
-                  )}
-
-                  {book.stock === 0 && (
-                    <div className="w-full py-2 px-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded font-semibold text-sm text-center">
-                      Tidak Tersedia
-                    </div>
-                  )}
+                  <button
+                    onClick={(e) => handleBorrowClick(e, book)}
+                    disabled={book.stock === 0}
+                    className={`w-full py-2 px-3 rounded font-semibold text-sm transition ${
+                      book.stock > 0
+                        ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
+                  >
+                    Ajukan Peminjaman
+                  </button>
                 </div>
               </div>
             </Link>
