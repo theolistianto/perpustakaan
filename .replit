@@ -10,3 +10,36 @@ channel = "stable-25_05"
 [userenv.shared]
 DATABASE_URL = "file:./dev.db"
 JWT_SECRET = "replit-dev-secret-key-change-in-production"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Next.js Dev Server"
+
+[[workflows.workflow]]
+name = "Next.js Dev Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd perpus && bash scripts/startup.sh"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd perpus && bash scripts/production-startup.sh"]
+build = ["bash", "-c", "cd perpus && npm run build"]
