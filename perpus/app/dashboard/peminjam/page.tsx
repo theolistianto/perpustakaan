@@ -79,9 +79,13 @@ export default function PeminjamPage() {
       });
 
       if (res.ok) {
+        // Update local state immediately to keep table visible
+        setRequests((prevRequests) =>
+          prevRequests.map((req) =>
+            req.id === requestId ? { ...req, status: "approved" } : req
+          )
+        );
         alert("Permintaan disetujui!");
-        // Refresh table but keep it visible
-        fetchAllRequests();
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
@@ -97,9 +101,11 @@ export default function PeminjamPage() {
       });
 
       if (res.ok) {
+        // Remove from local state immediately
+        setRequests((prevRequests) =>
+          prevRequests.filter((req) => req.id !== requestId)
+        );
         alert("Permintaan dihapus!");
-        // Refresh table but keep it visible
-        fetchAllRequests();
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
