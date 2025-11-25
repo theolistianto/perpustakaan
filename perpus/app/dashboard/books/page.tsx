@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BookOpen, Heart, Share2, X, CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface Book {
@@ -27,6 +29,7 @@ interface Category {
 }
 
 export default function BookCategoryPage() {
+  const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -90,7 +93,9 @@ export default function BookCategoryPage() {
     }
   };
 
-  const handleBorrowClick = (book: Book) => {
+  const handleBorrowClick = (e: React.MouseEvent, book: Book) => {
+    e.preventDefault();
+    e.stopPropagation();
     setSelectedBook(book);
     setShowModal(true);
   };
@@ -233,58 +238,61 @@ export default function BookCategoryPage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filteredBooks.map((book) => (
-            <div
+            <Link
               key={book.id}
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition h-full flex flex-col"
+              href={`/dashboard/books/${book.id}`}
+              className="group"
             >
-              <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition overflow-hidden">
-                {book.image ? (
-                  <img
-                    src={book.image}
-                    alt={book.title}
-                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                  />
-                ) : (
-                  <BookOpen className="w-16 h-16 text-gray-400 hover:scale-110 hover:text-gray-500 transition-all" />
-                )}
-                {book.stock === 0 && (
-                  <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
-                    Stok Habis
-                  </div>
-                )}
-                {book.stock > 0 && (
-                  <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
-                    Stok: {book.stock}
-                  </div>
-                )}
-              </div>
-
-              <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
-                <div className="mb-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
-                    {book.author}
-                  </p>
-                  <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2">
-                    {book.title}
-                  </h3>
+              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition h-full flex flex-col cursor-pointer">
+                <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition overflow-hidden">
+                  {book.image ? (
+                    <img
+                      src={book.image}
+                      alt={book.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <BookOpen className="w-16 h-16 text-gray-400 group-hover:scale-110 group-hover:text-gray-500 transition-all" />
+                  )}
+                  {book.stock === 0 && (
+                    <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
+                      Stok Habis
+                    </div>
+                  )}
+                  {book.stock > 0 && (
+                    <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
+                      Stok: {book.stock}
+                    </div>
+                  )}
                 </div>
 
-                {userRole === "member" && book.stock > 0 && (
-                  <button
-                    onClick={() => handleBorrowClick(book)}
-                    className="w-full py-2 px-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold text-sm transition"
-                  >
-                    Ajukan Peminjaman
-                  </button>
-                )}
-
-                {book.stock === 0 && (
-                  <div className="w-full py-2 px-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded font-semibold text-sm text-center">
-                    Tidak Tersedia
+                <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
+                      {book.author}
+                    </p>
+                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                      {book.title}
+                    </h3>
                   </div>
-                )}
+
+                  {userRole === "member" && book.stock > 0 && (
+                    <button
+                      onClick={(e) => handleBorrowClick(e, book)}
+                      className="w-full py-2 px-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold text-sm transition"
+                    >
+                      Ajukan Peminjaman
+                    </button>
+                  )}
+
+                  {book.stock === 0 && (
+                    <div className="w-full py-2 px-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded font-semibold text-sm text-center">
+                      Tidak Tersedia
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
