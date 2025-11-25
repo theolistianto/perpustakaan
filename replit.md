@@ -15,9 +15,12 @@ Perpus is a Next.js-based library management system that allows administrators t
 
 ## Key Features
 - User authentication (Admin/Member roles)
-- Book catalog management
+- Book catalog management with detail pages
 - Category and shelf organization
-- Borrowing system with status tracking (pending, borrowed, returned)
+- Complete borrowing system with status tracking (pending → approved/rejected)
+- Book detail pages with Like, Share, Request Borrowing buttons
+- User borrow request tracking table
+- Admin borrowing request management dashboard
 - Dashboard with statistics and charts
 - Member management
 - Fine calculation for late returns
@@ -67,9 +70,13 @@ This is optional but recommended to keep your repository clean.
 
 ## API Endpoints
 - `/api/auth/login`: User authentication with auto-account creation
-- `/api/books`: Book management
+- `/api/books`: Book management and listing
+- `/api/books/[id]`: Get book details with category and shelf info
 - `/api/members`: Member management
-- `/api/borrow`: Borrowing operations
+- `/api/borrow/request`: Create new borrow request (POST)
+- `/api/borrow/request/[id]`: Delete or update borrow request (DELETE, PATCH)
+- `/api/borrow/user-requests`: Get current user's borrow requests (GET)
+- `/api/borrow/all-requests`: Get all pending requests (Admin only)
 - `/api/dashboard`: Dashboard statistics
 - `/api/seed`: Database seeding (GET request)
 
@@ -79,12 +86,14 @@ This is optional but recommended to keep your repository clean.
 - Full dashboard access
 - Add, edit, delete books
 - View all members
-- Manage borrowing records
+- **Manage borrowing requests** - View all pending requests, approve (status → "approved"), or reject (status → "rejected")
 - Access settings
 - Full navbar with all features
 
 ### Member/Visitor (visitor@perpus.id / visitor123)
 - Browse book catalog
+- **View book details** with Like, Share, and Request Borrowing buttons
+- **Manage borrowing requests** - View personal requests with status tracking
 - View borrowing history
 - Limited navbar (only Books and "Peminjaman Saya")
 - No admin functions
@@ -108,6 +117,15 @@ This ensures that even on fresh deployments, the database will be properly initi
 6. JWT token is generated and stored in localStorage
 7. Role-based redirect happens automatically
 
+### Borrowing Workflow
+1. **Member clicks on a book** → Book detail page shows (title, author, category, shelf, stock)
+2. **Member clicks "Ajukan Peminjaman"** → Confirmation modal appears
+3. **Member confirms** → Borrow request created with status "pending"
+4. **Member sees status "Menunggu"** in Peminjaman Saya page
+5. **Admin views Peminjaman page** → Sees all pending requests with book info, user name, user ID
+6. **Admin clicks "Terima"** → Status changes to "approved" and shows "Silahkan ambil di perpustakaan"
+7. **Admin clicks "Tolak"** → Status changes to "rejected" (optional)
+
 ### Seeding the Database
 To seed the database with sample data, visit: `/api/seed`
 
@@ -118,26 +136,25 @@ This endpoint creates:
 
 ## Recent Changes (November 25, 2025)
 
-### Book Management
-- ✅ Created `/api/seed` endpoint to populate database with sample categories, shelves, and books
-- ✅ Fixed "Tambah Buku" form - now works correctly after database seeding
-- ✅ Add book form validates foreign keys properly
-- ✅ Books can now be created with category and shelf associations
-
-### Authentication System
-- ✅ Created professional login page at `/auth/login` with modern UI
-- ✅ Implemented 2-role authentication system:
-  - **Pengunjung (Member)**: Limited access to books catalog and "Peminjaman Saya"
-  - **Admin**: Full access to dashboard, books, members, borrowing, and settings
-- ✅ Created demo accounts that auto-create on first login:
-  - **Member**: visitor@perpus.id / visitor123
-  - **Admin**: admin@perpus.id / admin123
-- ✅ Login API auto-creates demo accounts if they don't exist
-- ✅ Role-based navbar - different menu items for each role
-- ✅ Protected dashboard layout with authentication check
-- ✅ Logout functionality that clears localStorage and redirects to home
-- ✅ Role stored in localStorage for client-side access
-- ✅ Token-based authentication with JWT
+### Borrowing System Implementation ✅
+- ✅ Created `/dashboard/books/[id]/page.tsx` - Book detail page with Like, Share, Request Borrowing buttons
+- ✅ Created book detail UI showing:
+  - Book title, author, category, shelf, stock information
+  - Like button (toggles favorite)
+  - Share button (uses native share or shows text)
+  - Request Borrowing button (for members with available stock)
+  - Borrow request table showing user's previous requests
+- ✅ Created `/api/books/[id]/route.ts` - Get individual book details with category and shelf
+- ✅ Created `/api/borrow/request/route.ts` - Create new borrow requests (POST)
+- ✅ Created `/api/borrow/request/[id]/route.ts` - Delete (DELETE) or update status (PATCH) for borrow requests
+- ✅ Created `/api/borrow/user-requests/route.ts` - Get current user's borrow requests with filtering by book
+- ✅ Created `/api/borrow/all-requests/route.ts` - Get all pending requests (for admin dashboard)
+- ✅ Created `/dashboard/borrow/page.tsx` - Borrow management page showing:
+  - **For Members**: List of their requests with status (Menunggu, Silahkan ambil di perpustakaan, Ditolak)
+  - **For Admin**: All pending requests with book details, user name, status, and Accept/Reject buttons
+- ✅ Status flow implemented: pending → approved → "Silahkan ambil di perpustakaan"
+- ✅ Admin approve/reject functionality with automatic status updates
+- ✅ API tests confirm all endpoints working correctly
 
 ### Previous Features
 - Created professional landing page at `/` with navbar, hero section, services, and CTA
@@ -159,6 +176,11 @@ This endpoint creates:
 - Added comprehensive .gitignore for Node.js/Next.js and excluded SQLite database files
 - Updated deployment configuration for autoscale deployment target with production startup script
 - Ensured database auto-initialization for fresh deployments
+- Created professional login page at `/auth/login` with 2-role authentication system
+- Implemented demo accounts with auto-account creation on first login
+- Created role-based navbar with different menu items for admin and member
+- Protected dashboard layout with authentication check
+- Added logout functionality that clears localStorage and redirects to home
 
 ## Project Architecture
 - `/perpus/app`: Next.js app directory with routes and API endpoints
@@ -166,3 +188,13 @@ This endpoint creates:
 - `/perpus/lib`: Utility functions (auth, database, utils)
 - `/perpus/prisma`: Database schema and migrations
 - `/perpus/public`: Static assets
+
+## Testing
+API endpoints verified and tested:
+- Login: ✅ Creates user and returns JWT token
+- Book listing: ✅ Returns all books with category and shelf info
+- Book details: ✅ Returns single book with relationships
+- Borrow request creation: ✅ Creates request with pending status
+- User requests: ✅ Returns filtered user's requests
+- All requests (admin): ✅ Returns all pending requests
+- Status update: ✅ Updates request status (pending → approved → "Silahkan ambil di perpustakaan")

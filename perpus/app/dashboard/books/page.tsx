@@ -69,7 +69,6 @@ export default function BookCategoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-4 font-sans space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <BookOpen className="w-8 h-8 text-blue-600" />
@@ -83,7 +82,6 @@ export default function BookCategoryPage() {
         </Link>
       </div>
 
-      {/* Search & Category */}
       <div className="flex flex-wrap gap-4 items-center">
         <input
           type="text"
@@ -117,7 +115,6 @@ export default function BookCategoryPage() {
         )}
       </div>
 
-      {/* Grid Buku */}
       {loading ? (
         <div className="text-center py-12">
           <p className="text-gray-500">Memuat buku...</p>
@@ -135,7 +132,6 @@ export default function BookCategoryPage() {
               className="group block"
             >
               <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition cursor-pointer h-full flex flex-col">
-                {/* Image Container */}
                 <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition overflow-hidden">
                   {book.image ? (
                     <img
@@ -158,7 +154,6 @@ export default function BookCategoryPage() {
                   )}
                 </div>
 
-                {/* Info Container */}
                 <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
