@@ -62,7 +62,6 @@ export default function PeminjamPage() {
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
-        setFilteredRequests(data);
       }
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -81,7 +80,8 @@ export default function PeminjamPage() {
 
       if (res.ok) {
         alert("Permintaan disetujui!");
-        fetchAllRequests();
+        // Update local state to remove the approved request from pending
+        setRequests(requests.filter(r => r.id !== requestId));
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
@@ -98,7 +98,8 @@ export default function PeminjamPage() {
 
       if (res.ok) {
         alert("Permintaan dihapus!");
-        fetchAllRequests();
+        // Update local state to remove the deleted request
+        setRequests(requests.filter(r => r.id !== requestId));
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);

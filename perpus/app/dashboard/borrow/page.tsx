@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen, X, Trash2, Check } from "lucide-react";
+import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen, X, Trash2 } from "lucide-react";
 
 interface Book {
   id: number;
@@ -73,7 +73,6 @@ export default function BorrowPage() {
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
-        setFilteredRequests(data);
       }
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -90,29 +89,11 @@ export default function BorrowPage() {
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
-        setFilteredRequests(data);
       }
     } catch (error) {
       console.error("Error fetching requests:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleApprove = async (requestId: number) => {
-    try {
-      const res = await fetch(`/api/borrow/request/${requestId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "approved" }),
-      });
-
-      if (res.ok) {
-        alert("Permintaan disetujui!");
-        userRole === "admin" ? fetchAllRequests() : fetchUserRequests();
-      }
-    } catch (error) {
-      alert("Error: " + (error as Error).message);
     }
   };
 
@@ -177,7 +158,7 @@ export default function BorrowPage() {
     }
 
     setFilteredRequests(filtered);
-  }, [statusFilter, selectedBook, requests, userRole]);
+  }, [statusFilter, selectedBook, requests]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -372,17 +353,13 @@ export default function BorrowPage() {
                       <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                         Email
                       </th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                        Status
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                        Aksi
+                      </th>
                     </>
-                  )}
-                  {userRole === "admin" && (
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                      Status
-                    </th>
-                  )}
-                  {userRole === "admin" && (
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                      Aksi
-                    </th>
                   )}
                 </tr>
               </thead>
@@ -409,34 +386,19 @@ export default function BorrowPage() {
                         <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
                           {req.user.email}
                         </td>
-                      </>
-                    )}
-                    {userRole === "admin" && (
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(req.status)}
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                              req.status
-                            )}`}
-                          >
-                            {getStatusText(req.status)}
-                          </span>
-                        </div>
-                      </td>
-                    )}
-                    {userRole === "admin" && (
-                      <td className="py-4 px-6">
-                        <div className="flex gap-2">
-                          {req.status === "pending" && (
-                            <button
-                              onClick={() => handleApprove(req.id)}
-                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm flex items-center gap-2"
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(req.status)}
+                            <span
+                              className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                                req.status
+                              )}`}
                             >
-                              <Check className="w-4 h-4" />
-                              Terima
-                            </button>
-                          )}
+                              {getStatusText(req.status)}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
                           <button
                             onClick={() => handleDelete(req.id)}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
@@ -444,8 +406,8 @@ export default function BorrowPage() {
                             <Trash2 className="w-4 h-4" />
                             Hapus
                           </button>
-                        </div>
-                      </td>
+                        </td>
+                      </>
                     )}
                   </tr>
                 ))}
