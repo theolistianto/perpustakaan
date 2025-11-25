@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-export async function GET() {
-  const books = await prisma.book.findMany({
-    include: { category: true, shelf: true },
-  });
-  return NextResponse.json(books);
+export async function GET(req: NextRequest) {
+  try {
+    const books = await prisma.book.findMany({
+      include: {
+        category: true,
+        shelf: true,
+      },
+    });
+    return NextResponse.json(books);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -18,18 +25,15 @@ export async function POST(req: NextRequest) {
         author,
         categoryId,
         shelfId,
-        stock: stock || 0,
-        totalStock: stock || 0,
-        image: image || null,
+        stock,
+        totalStock: stock,
+        image,
       },
       include: { category: true, shelf: true },
     });
 
     return NextResponse.json(book, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json(
-      { message: error.message || "Failed to create book" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

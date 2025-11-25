@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Heart, Share2, X, CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface Book {
   id: number;
@@ -10,6 +9,16 @@ interface Book {
   stock: number;
   image?: string;
   categoryId: number;
+  category?: { name: string };
+  shelf?: { name: string };
+}
+
+interface BorrowRequest {
+  id: number;
+  bookId: number;
+  status: string;
+  borrowDate: string;
+  book?: Book;
 }
 
 interface Category {
@@ -23,6 +32,13 @@ export default function BookCategoryPage() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  
+  const [showModal, setShowModal] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [borrowRequests, setBorrowRequests] = useState<BorrowRequest[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
 
   const categories: Category[] = [
     { id: 1, name: "Fiksi" },
@@ -31,6 +47,11 @@ export default function BookCategoryPage() {
   ];
 
   useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    const email = localStorage.getItem("userEmail");
+    setUserRole(role);
+    setUserEmail(email);
+
     const fetchBooks = async () => {
       try {
         const response = await fetch("/api/books");
@@ -47,7 +68,78 @@ export default function BookCategoryPage() {
     };
 
     fetchBooks();
+    if (role === "member") {
+      fetchBorrowRequests();
+    }
   }, []);
+
+  const fetchBorrowRequests = async () => {
+    setLoadingRequests(true);
+    try {
+      const res = await fetch(`/api/borrow/user-requests`, {
+        headers: { "x-user-email": userEmail || "" },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBorrowRequests(data);
+      }
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    } finally {
+      setLoadingRequests(false);
+    }
+  };
+
+  const handleBorrowClick = (book: Book) => {
+    setSelectedBook(book);
+    setShowModal(true);
+  };
+
+  const handleConfirmBorrow = async () => {
+    if (!selectedBook || !userEmail) return;
+
+    try {
+      const res = await fetch("/api/borrow/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-email": userEmail,
+        },
+        body: JSON.stringify({
+          bookId: selectedBook.id,
+        }),
+      });
+
+      if (res.ok) {
+        alert("Permintaan peminjaman berhasil dibuat!");
+        setShowModal(false);
+        setSelectedBook(null);
+        fetchBorrowRequests();
+      } else {
+        const error = await res.json();
+        alert("Error: " + error.message);
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
+
+  const handleDeleteRequest = async (requestId: number) => {
+    if (!confirm("Hapus permintaan peminjaman ini?")) return;
+
+    try {
+      const res = await fetch(`/api/borrow/request/${requestId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        alert("Permintaan dihapus");
+        fetchBorrowRequests();
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
 
   useEffect(() => {
     let filtered = books;
@@ -67,6 +159,27 @@ export default function BookCategoryPage() {
     setFilteredBooks(filtered);
   }, [selectedCategory, search, books]);
 
+  const getStatusIcon = (status: string) => {
+    if (status === "pending") return <Clock className="w-4 h-4 text-yellow-600" />;
+    if (status === "approved") return <CheckCircle className="w-4 h-4 text-green-600" />;
+    if (status === "rejected") return <XCircle className="w-4 h-4 text-red-600" />;
+    return null;
+  };
+
+  const getStatusColor = (status: string) => {
+    if (status === "pending") return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
+    if (status === "approved") return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
+    if (status === "rejected") return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+    return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
+  };
+
+  const getStatusText = (status: string) => {
+    if (status === "pending") return "Menunggu";
+    if (status === "approved") return "Silahkan ambil di perpustakaan";
+    if (status === "rejected") return "Ditolak";
+    return status;
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4 font-sans space-y-6">
       <div className="flex items-center justify-between mb-6">
@@ -74,12 +187,6 @@ export default function BookCategoryPage() {
           <BookOpen className="w-8 h-8 text-blue-600" />
           Katalog Buku
         </h1>
-        <Link
-          href="/dashboard/books/tambah"
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
-        >
-          + Tambah Buku
-        </Link>
       </div>
 
       <div className="flex flex-wrap gap-4 items-center">
@@ -126,47 +233,194 @@ export default function BookCategoryPage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filteredBooks.map((book) => (
-            <Link
+            <div
               key={book.id}
-              href={`/dashboard/books/${book.id}`}
-              className="group block"
+              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition h-full flex flex-col"
             >
-              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition cursor-pointer h-full flex flex-col">
-                <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition overflow-hidden">
-                  {book.image ? (
-                    <img
-                      src={book.image}
-                      alt={book.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  ) : (
-                    <BookOpen className="w-16 h-16 text-gray-400 group-hover:scale-110 group-hover:text-gray-500 transition-all" />
-                  )}
-                  {book.stock === 0 && (
-                    <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
-                      Stok Habis
-                    </div>
-                  )}
-                  {book.stock > 0 && (
-                    <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
-                      Stok: {book.stock}
-                    </div>
-                  )}
+              <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition overflow-hidden">
+                {book.image ? (
+                  <img
+                    src={book.image}
+                    alt={book.title}
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <BookOpen className="w-16 h-16 text-gray-400 hover:scale-110 hover:text-gray-500 transition-all" />
+                )}
+                {book.stock === 0 && (
+                  <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
+                    Stok Habis
+                  </div>
+                )}
+                {book.stock > 0 && (
+                  <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
+                    Stok: {book.stock}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
+                <div className="mb-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
+                    {book.author}
+                  </p>
+                  <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2">
+                    {book.title}
+                  </h3>
                 </div>
 
-                <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
-                      {book.author}
-                    </p>
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                      {book.title}
-                    </h3>
+                {userRole === "member" && book.stock > 0 && (
+                  <button
+                    onClick={() => handleBorrowClick(book)}
+                    className="w-full py-2 px-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold text-sm transition"
+                  >
+                    Ajukan Peminjaman
+                  </button>
+                )}
+
+                {book.stock === 0 && (
+                  <div className="w-full py-2 px-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded font-semibold text-sm text-center">
+                    Tidak Tersedia
                   </div>
-                </div>
+                )}
               </div>
-            </Link>
+            </div>
           ))}
+        </div>
+      )}
+
+      {/* Borrow Requests Table */}
+      {userRole === "member" && !loadingRequests && borrowRequests.length > 0 && (
+        <div className="mt-12 pt-8 border-t-2 border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            Permintaan Peminjaman Saya
+          </h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                      ID
+                    </th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                      Judul Buku
+                    </th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                      Pengarang
+                    </th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                      Status
+                    </th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {borrowRequests.map((req) => (
+                    <tr
+                      key={req.id}
+                      className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                    >
+                      <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                        #{req.id}
+                      </td>
+                      <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                        {req.book?.title}
+                      </td>
+                      <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
+                        {req.book?.author}
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(req.status)}
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                              req.status
+                            )}`}
+                          >
+                            {getStatusText(req.status)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        {req.status === "pending" && (
+                          <button
+                            onClick={() => handleDeleteRequest(req.id)}
+                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition font-medium text-sm"
+                          >
+                            Batal
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Borrow Modal */}
+      {showModal && selectedBook && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Ajukan Peminjaman
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Judul Buku</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {selectedBook.title}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Pengarang</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {selectedBook.author}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Kategori</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {selectedBook.category?.name}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Rak</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {selectedBook.shelf?.name}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition font-semibold"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmBorrow}
+                className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+              >
+                Pinjam
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

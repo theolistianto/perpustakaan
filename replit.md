@@ -15,12 +15,15 @@ Perpus is a Next.js-based library management system that allows administrators t
 
 ## Key Features
 - User authentication (Admin/Member roles)
-- Book catalog management with detail pages
+- Book catalog management with image support
 - Category and shelf organization
-- Complete borrowing system with status tracking (pending → approved/rejected)
-- Book detail pages with Like, Share, Request Borrowing buttons
-- User borrow request tracking table
-- Admin borrowing request management dashboard
+- Complete borrowing system with status tracking:
+  - **"Menunggu"** - Pending approval from admin
+  - **"Silahkan ambil di perpustakaan"** - Approved, ready to pick up
+  - **"Ditolak"** - Rejected by admin
+- Inline borrowing UI directly on book cards
+- User borrow request tracking with status indicators
+- Admin borrowing request management dashboard with Accept/Reject buttons
 - Dashboard with statistics and charts
 - Member management
 - Fine calculation for late returns
@@ -70,7 +73,7 @@ This is optional but recommended to keep your repository clean.
 
 ## API Endpoints
 - `/api/auth/login`: User authentication with auto-account creation
-- `/api/books`: Book management and listing
+- `/api/books`: Book management and listing (includes category and shelf data)
 - `/api/books/[id]`: Get book details with category and shelf info
 - `/api/members`: Member management
 - `/api/borrow/request`: Create new borrow request (POST)
@@ -86,15 +89,19 @@ This is optional but recommended to keep your repository clean.
 - Full dashboard access
 - Add, edit, delete books
 - View all members
-- **Manage borrowing requests** - View all pending requests, approve (status → "approved"), or reject (status → "rejected")
+- **Manage borrowing requests** - View all pending requests via `/dashboard/borrow`, approve (status → "approved"), or reject (status → "rejected")
 - Access settings
 - Full navbar with all features
 
 ### Member/Visitor (visitor@perpus.id / visitor123)
-- Browse book catalog
-- **View book details** with Like, Share, and Request Borrowing buttons
-- **Manage borrowing requests** - View personal requests with status tracking
-- View borrowing history
+- Browse book catalog with search and category filters
+- **View book cards** with stock information
+- **Request Borrowing** - Click "Ajukan Peminjaman" button on book card → confirm in modal → request created
+- **View borrowing requests** - Table shows all requests with statuses and cancel option for pending requests
+- View borrowing history with status tracking:
+  - "Menunggu" (Pending admin approval)
+  - "Silahkan ambil di perpustakaan" (Approved, ready to pick up)
+  - "Ditolak" (Rejected by admin)
 - Limited navbar (only Books and "Peminjaman Saya")
 - No admin functions
 
@@ -117,14 +124,18 @@ This ensures that even on fresh deployments, the database will be properly initi
 6. JWT token is generated and stored in localStorage
 7. Role-based redirect happens automatically
 
-### Borrowing Workflow
-1. **Member clicks on a book** → Book detail page shows (title, author, category, shelf, stock)
-2. **Member clicks "Ajukan Peminjaman"** → Confirmation modal appears
-3. **Member confirms** → Borrow request created with status "pending"
-4. **Member sees status "Menunggu"** in Peminjaman Saya page
-5. **Admin views Peminjaman page** → Sees all pending requests with book info, user name, user ID
-6. **Admin clicks "Terima"** → Status changes to "approved" and shows "Silahkan ambil di perpustakaan"
-7. **Admin clicks "Tolak"** → Status changes to "rejected" (optional)
+### Borrowing Workflow (Member)
+1. **Member views Katalog Buku** → See books in grid with "Ajukan Peminjaman" button
+2. **Member clicks "Ajukan Peminjaman"** → Modal appears with book details (Judul, Pengarang, Kategori, Rak)
+3. **Member clicks "Pinjam"** → Request created with status "pending"
+4. **Table appears below** → Shows request with status "Menunggu" and "Batal" button
+5. **Member sees update** → When admin approves, status changes to "Silahkan ambil di perpustakaan"
+
+### Borrowing Workflow (Admin)
+1. **Admin views `/dashboard/borrow`** → See all pending requests with book info, user name, user email
+2. **Admin clicks "Terima"** → Request approved, status becomes "approved"
+3. **Member sees update** → Status changes to "Silahkan ambil di perpustakaan" in their table
+4. **Admin can also click "Tolak"** → Reject the request, status becomes "rejected"
 
 ### Seeding the Database
 To seed the database with sample data, visit: `/api/seed`
@@ -136,51 +147,37 @@ This endpoint creates:
 
 ## Recent Changes (November 25, 2025)
 
-### Borrowing System Implementation ✅
-- ✅ Created `/dashboard/books/[id]/page.tsx` - Book detail page with Like, Share, Request Borrowing buttons
-- ✅ Created book detail UI showing:
-  - Book title, author, category, shelf, stock information
-  - Like button (toggles favorite)
-  - Share button (uses native share or shows text)
-  - Request Borrowing button (for members with available stock)
-  - Borrow request table showing user's previous requests
-- ✅ Created `/api/books/[id]/route.ts` - Get individual book details with category and shelf
-- ✅ Created `/api/borrow/request/route.ts` - Create new borrow requests (POST)
-- ✅ Created `/api/borrow/request/[id]/route.ts` - Delete (DELETE) or update status (PATCH) for borrow requests
-- ✅ Created `/api/borrow/user-requests/route.ts` - Get current user's borrow requests with filtering by book
-- ✅ Created `/api/borrow/all-requests/route.ts` - Get all pending requests (for admin dashboard)
-- ✅ Created `/dashboard/borrow/page.tsx` - Borrow management page showing:
-  - **For Members**: List of their requests with status (Menunggu, Silahkan ambil di perpustakaan, Ditolak)
-  - **For Admin**: All pending requests with book details, user name, status, and Accept/Reject buttons
-- ✅ Status flow implemented: pending → approved → "Silahkan ambil di perpustakaan"
-- ✅ Admin approve/reject functionality with automatic status updates
-- ✅ API tests confirm all endpoints working correctly
+### Simplified Borrowing UI Implementation ✅
+- ✅ Added "Ajukan Peminjaman" button directly on book cards
+- ✅ Created confirmation modal showing book details (Judul, Pengarang, Kategori, Rak)
+- ✅ Inline borrow request table appears below books showing:
+  - Request ID
+  - Book title and author
+  - Status with color-coded badges (Menunggu, Silahkan ambil, Ditolak)
+  - Cancel button for pending requests
+- ✅ Status display with icons (Clock for pending, CheckCircle for approved, XCircle for rejected)
+- ✅ Updated `/api/books` to include category and shelf relationships
+- ✅ Updated `/api/borrow/user-requests` to fetch book relationships with category/shelf
 
-### Previous Features
-- Created professional landing page at `/` with navbar, hero section, services, and CTA
-- Added navbar component with logo, navigation menu, and login button
-- Implemented "Tambah Buku" (Add Book) page at `/dashboard/books/tambah`
-- Added image upload support for book covers (base64 storage in database)
-- Updated book catalog with image thumbnails display
-- Updated Books API to handle image data
-- Added image field to Book model in Prisma schema
-- Created database migration for book image support
-- Updated books listing page to fetch and display from API
-- Simplified landing page structure for better maintainability
-- Migrated from PostgreSQL to SQLite for simplified Replit deployment
-- Regenerated Prisma migrations with SQLite-specific syntax (removed PostgreSQL-specific DDL)
-- Configured Next.js to run on port 5000 with 0.0.0.0 host binding
-- Set up environment variables in Replit shared environment (DATABASE_URL, JWT_SECRET)
-- Created fresh SQLite migrations compatible with Replit
-- Added startup scripts that automatically run database migrations before server start
-- Added comprehensive .gitignore for Node.js/Next.js and excluded SQLite database files
-- Updated deployment configuration for autoscale deployment target with production startup script
-- Ensured database auto-initialization for fresh deployments
-- Created professional login page at `/auth/login` with 2-role authentication system
-- Implemented demo accounts with auto-account creation on first login
-- Created role-based navbar with different menu items for admin and member
-- Protected dashboard layout with authentication check
-- Added logout functionality that clears localStorage and redirects to home
+### Previous Implementation
+- ✅ Created book detail pages with Like, Share, Request Borrowing buttons (now replaced with simpler UI)
+- ✅ Created API endpoints for borrowing functionality
+- ✅ Implemented admin panel for managing borrow requests
+- ✅ Created professional landing page at `/` with navbar, hero section, services, and CTA
+- ✅ Added navbar component with logo, navigation menu, and login button
+- ✅ Implemented "Tambah Buku" (Add Book) page at `/dashboard/books/tambah`
+- ✅ Added image upload support for book covers (base64 storage in database)
+- ✅ Updated book catalog with image thumbnails display
+- ✅ Migrated from PostgreSQL to SQLite for simplified Replit deployment
+- ✅ Configured Next.js to run on port 5000 with 0.0.0.0 host binding
+- ✅ Created fresh SQLite migrations compatible with Replit
+- ✅ Added startup scripts that automatically run database migrations before server start
+- ✅ Created comprehensive .gitignore for Node.js/Next.js and excluded SQLite database files
+- ✅ Created professional login page at `/auth/login` with 2-role authentication system
+- ✅ Implemented demo accounts with auto-account creation on first login
+- ✅ Created role-based navbar with different menu items for admin and member
+- ✅ Protected dashboard layout with authentication check
+- ✅ Added logout functionality that clears localStorage and redirects to home
 
 ## Project Architecture
 - `/perpus/app`: Next.js app directory with routes and API endpoints
@@ -195,6 +192,7 @@ API endpoints verified and tested:
 - Book listing: ✅ Returns all books with category and shelf info
 - Book details: ✅ Returns single book with relationships
 - Borrow request creation: ✅ Creates request with pending status
-- User requests: ✅ Returns filtered user's requests
+- User requests: ✅ Returns filtered user's requests with relationships
 - All requests (admin): ✅ Returns all pending requests
 - Status update: ✅ Updates request status (pending → approved → "Silahkan ambil di perpustakaan")
+- Modal confirmation: ✅ Shows book details with category and shelf
