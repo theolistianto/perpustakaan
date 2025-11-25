@@ -1,276 +1,188 @@
 "use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { motion } from "framer-motion";
-import { BookOpen, Calendar, CheckCircle, Trash2 } from "lucide-react";
 
-interface Borrow {
+import { useEffect, useState } from "react";
+import { FileText } from "lucide-react";
+
+interface BorrowRequest {
   id: number;
-  userId: string;
-  userName: string;
-  bookId: number;
-  bookTitle: string;
-  date: string;
-}
-
-// Daftar buku
-const books = [
-  { id: 1, title: "Journey Through the Qur'an", stock: 5 },
-  { id: 2, title: "Al-Quran Cordoba Jariyah Wakaf A5", stock: 15 },
-  { id: 3, title: "Memahami Sejarah dari Al-Quran", stock: 10 },
-];
-
-// Fungsi generate user id acak 8 karakter
-function generateUserId() {
-  const chars = "0123456789";
-  let result = "";
-  for (let i = 0; i < 8; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+  status: string;
+  borrowDate: string;
+  book: {
+    id: number;
+    title: string;
+    author: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 export default function BorrowPage() {
-  const [bookName, setBookName] = useState("");
-  const [isBorrowing, setIsBorrowing] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [borrowings, setBorrowings] = useState<Borrow[]>([]);
+  const [requests, setRequests] = useState<BorrowRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
-  // Cari buku sesuai nama (partial match)
-  const filteredBooks = books.filter((b) =>
-    b.title.toLowerCase().includes(bookName.toLowerCase())
-  );
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    setUserRole(role);
 
-  const selectedBook = filteredBooks.length === 1 ? filteredBooks[0] : null;
-
-  const handleBorrow = async () => {
-    if (!selectedBook) {
-      alert("Buku tidak ditemukan!");
-      return;
+    if (role === "admin") {
+      fetchAllRequests();
+    } else {
+      fetchUserRequests();
     }
+  }, []);
 
-    setIsBorrowing(true);
+  const fetchAllRequests = async () => {
     try {
-      await new Promise((res) => setTimeout(res, 500));
-
-      // Generate user acak
-      const userId = generateUserId();
-      const userName = `User-${userId.slice(0, 4)}`;
-
-      const newBorrow: Borrow = {
-        id: borrowings.length + 1,
-        userId,
-        userName,
-        bookId: selectedBook.id,
-        bookTitle: selectedBook.title,
-        date: new Date().toISOString(),
-      };
-      setBorrowings([...borrowings, newBorrow]);
-      setSuccess(true);
-      setBookName("");
+      const res = await fetch("/api/borrow/all-requests");
+      if (res.ok) {
+        const data = await res.json();
+        setRequests(data);
+      }
     } catch (error) {
-      alert("Terjadi kesalahan saat meminjam buku.");
+      console.error("Error fetching requests:", error);
     } finally {
-      setIsBorrowing(false);
+      setLoading(false);
     }
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("Apakah Anda yakin ingin menghapus peminjaman ini?")) {
-      setBorrowings(borrowings.filter((b) => b.id !== id));
+  const fetchUserRequests = async () => {
+    try {
+      const userEmail = localStorage.getItem("userEmail");
+      const res = await fetch(`/api/borrow/user-requests`, {
+        headers: { "x-user-email": userEmail || "" },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setRequests(data);
+      }
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleApprove = async (requestId: number) => {
+    try {
+      const res = await fetch(`/api/borrow/request/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      });
+
+      if (res.ok) {
+        alert("Permintaan disetujui!");
+        userRole === "admin" ? fetchAllRequests() : fetchUserRequests();
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
+
+  const handleReject = async (requestId: number) => {
+    try {
+      const res = await fetch(`/api/borrow/request/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected" }),
+      });
+
+      if (res.ok) {
+        alert("Permintaan ditolak!");
+        userRole === "admin" ? fetchAllRequests() : fetchUserRequests();
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    if (status === "pending") return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
+    if (status === "approved") return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
+    if (status === "rejected") return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+    return "bg-gray-100 text-gray-800";
+  };
+
+  const getStatusText = (status: string) => {
+    if (status === "pending") return "Menunggu";
+    if (status === "approved") return "Silahkan ambil di perpustakaan";
+    if (status === "rejected") return "Ditolak";
+    return status;
+  };
+
+  if (loading)
+    return <div className="text-center py-12"><p>Memuat...</p></div>;
 
   return (
-    <div className="space-y-6">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-      >
-        Sistem Peminjaman Buku
-      </motion.h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* FORM PINJAM BUKU */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <BookOpen className="mr-2 h-8 w-8 text-indigo-600" />
-                Pinjam Buku
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="relative">
-                <BookOpen className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                <Input
-                  placeholder="Masukkan Nama Buku"
-                  value={bookName}
-                  onChange={(e) => setBookName(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* CARD INFORMASI BUKU TERKAIT */}
-              {bookName && filteredBooks.length > 0 && (
-                <div className="mt-2">
-                  {filteredBooks.map((book) => (
-                    <Card
-                      key={book.id}
-                      className="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-sm mb-2 p-2"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-semibold">{book.title}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
-                            ID: {book.id} | Stok: {book.stock}
-                          </p>
-                        </div>
-                        <span className="text-green-600 dark:text-green-400 font-semibold">
-                          {book.stock > 0 ? "Tersedia" : "Habis"}
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-
-              {/* DIALOG KONFIRMASI */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    disabled={!selectedBook || isBorrowing}
-                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105"
-                  >
-                    {isBorrowing ? "Memproses..." : "Pinjam Buku"}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center">
-                      <Calendar className="mr-2 h-6 w-6 text-indigo-600" />
-                      Konfirmasi Peminjaman
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <p>
-                      Apakah Anda yakin ingin meminjam buku{" "}
-                      <strong>{selectedBook?.title}</strong>?
-                    </p>
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setBookName("")}>
-                        Batal
-                      </Button>
-                      <Button onClick={handleBorrow} disabled={isBorrowing}>
-                        {isBorrowing ? "Memproses..." : "Ya, Pinjam"}
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* STATUS PINJAMAN */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="bg-gradient-to-br from-green-400 to-blue-500 text-white shadow-xl border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <CheckCircle className="mr-2 h-8 w-8" />
-                Status Peminjaman
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {success ? (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="text-center"
-                >
-                  <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-300" />
-                  <p className="text-lg font-semibold">
-                    Buku berhasil dipinjam!
-                  </p>
-                  <p className="text-sm opacity-80">
-                    Silakan ambil buku di rak yang sesuai.
-                  </p>
-                </motion.div>
-              ) : (
-                <p className="text-lg">Belum ada peminjaman aktif.</p>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+    <div className="max-w-7xl mx-auto p-4 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <FileText className="w-8 h-8 text-blue-600" />
+          {userRole === "admin" ? "Kelola Peminjaman" : "Peminjaman Saya"}
+        </h1>
       </div>
 
-      {/* TABEL PEMINJAMAN */}
-      <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl border-0">
-        <CardHeader>
-          <CardTitle>Peminjaman Aktif</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {borrowings.length === 0 ? (
-            <p className="text-gray-600 dark:text-gray-300">
-              Belum ada peminjaman aktif.
-            </p>
-          ) : (
-            <table className="w-full text-left border">
-              <thead>
-                <tr>
-                  <th className="border p-2">No</th>
-                  <th className="border p-2">ID User</th>
-                  <th className="border p-2">Nama User</th>
-                  <th className="border p-2">Nama Buku</th>
-                  <th className="border p-2">Tanggal Pinjam</th>
-                  <th className="border p-2">Aksi</th>
+      {requests.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400">Tidak ada permintaan peminjaman</p>
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">ID</th>
+                <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Judul Buku</th>
+                <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Pengarang</th>
+                {userRole === "admin" && (
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Nama Peminjam</th>
+                )}
+                <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Status</th>
+                <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.map((req) => (
+                <tr key={req.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="py-4 px-6 text-gray-900 dark:text-white">{req.id}</td>
+                  <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">{req.book.title}</td>
+                  <td className="py-4 px-6 text-gray-600 dark:text-gray-400">{req.book.author}</td>
+                  {userRole === "admin" && (
+                    <td className="py-4 px-6 text-gray-900 dark:text-white">{req.user.name}</td>
+                  )}
+                  <td className="py-4 px-6">
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(req.status)}`}>
+                      {getStatusText(req.status)}
+                    </span>
+                  </td>
+                  <td className="py-4 px-6">
+                    {userRole === "admin" && req.status === "pending" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleApprove(req.id)}
+                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-medium text-sm"
+                        >
+                          Terima
+                        </button>
+                        <button
+                          onClick={() => handleReject(req.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition font-medium text-sm"
+                        >
+                          Tolak
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {borrowings.map((b, i) => (
-                  <tr key={b.id}>
-                    <td className="border p-2">{i + 1}</td>
-                    <td className="border p-2">{b.userId}</td>
-                    <td className="border p-2">{b.userName}</td>
-                    <td className="border p-2">{b.bookTitle}</td>
-                    <td className="border p-2">
-                      {new Date(b.date).toLocaleDateString()}
-                    </td>
-                    <td className="border p-2">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(b.id)}
-                        className="flex items-center space-x-1"
-                      >
-                        <Trash2 className="h-4 w-4" /> <span>Hapus</span>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </CardContent>
-      </Card>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
