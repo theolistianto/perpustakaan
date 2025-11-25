@@ -67,12 +67,22 @@ export default function BorrowPage() {
 
   const fetchAllRequests = async () => {
     try {
-      const res = await fetch("/api/borrow/all-requests", {
+      // Fetch from an endpoint that returns ALL requests, not just pending
+      const res = await fetch("/api/borrow/all-requests?status=all", {
         headers: { "x-user-email": userEmail || "" },
       });
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
+      } else {
+        // Fallback: fetch from user-requests if admin endpoint doesn't support all
+        const fallbackRes = await fetch("/api/borrow/all-requests", {
+          headers: { "x-user-email": userEmail || "" },
+        });
+        if (fallbackRes.ok) {
+          const data = await fallbackRes.json();
+          setRequests(data);
+        }
       }
     } catch (error) {
       console.error("Error fetching requests:", error);

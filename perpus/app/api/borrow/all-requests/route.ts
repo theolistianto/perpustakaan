@@ -3,8 +3,8 @@ import { prisma } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   try {
+    // Get all requests regardless of status (don't filter by status)
     const requests = await prisma.borrow.findMany({
-      where: { status: "pending" },
       include: { book: true, user: true },
       orderBy: { borrowDate: "desc" },
     });
