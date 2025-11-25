@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Heart, Share2, FileText } from "lucide-react";
+import { ArrowLeft, Heart, Share2, FileText, X } from "lucide-react";
 
 interface Book {
   id: number;
@@ -24,8 +24,13 @@ export default function BookDetailPage() {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    setUserEmail(email);
+
     const fetchBook = async () => {
       try {
         const res = await fetch(`/api/books/${bookId}`);
@@ -42,6 +47,36 @@ export default function BookDetailPage() {
 
     fetchBook();
   }, [bookId]);
+
+  const handleBorrow = async () => {
+    if (!userEmail) {
+      alert("Silakan login terlebih dahulu");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/borrow/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-email": userEmail,
+        },
+        body: JSON.stringify({
+          bookId: parseInt(bookId),
+        }),
+      });
+
+      if (res.ok) {
+        alert("Permintaan peminjaman berhasil dibuat!");
+        setShowModal(false);
+      } else {
+        const error = await res.json();
+        alert("Error: " + error.message);
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
 
   if (loading)
     return (
@@ -113,6 +148,18 @@ export default function BookDetailPage() {
                 <Share2 className="w-5 h-5" />
                 Bagikan
               </button>
+
+              <button
+                onClick={() => setShowModal(true)}
+                disabled={book.stock === 0}
+                className={`w-full py-3 rounded-lg font-semibold transition ${
+                  book.stock > 0
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                Ajukan Peminjaman
+              </button>
             </div>
           </div>
 
@@ -149,6 +196,67 @@ export default function BookDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Borrow Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Ajukan Peminjaman
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Judul Buku</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {book.title}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Pengarang</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {book.author}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Kategori</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {book.category?.name}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Rak</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {book.shelf?.name}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition font-semibold"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleBorrow}
+                className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+              >
+                Pinjam
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

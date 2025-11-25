@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { BookOpen, Heart, Share2, X, CheckCircle, Clock, XCircle } from "lucide-react";
+import { BookOpen, CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface Book {
   id: number;
@@ -36,8 +36,6 @@ export default function BookCategoryPage() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   
-  const [showModal, setShowModal] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [borrowRequests, setBorrowRequests] = useState<BorrowRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
 
@@ -88,50 +86,6 @@ export default function BookCategoryPage() {
       console.error("Error fetching requests:", error);
     } finally {
       setLoadingRequests(false);
-    }
-  };
-
-  const handleBorrowClick = (e: React.MouseEvent, book: Book) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!userEmail) {
-      alert("Silakan login terlebih dahulu untuk meminjam buku");
-      return;
-    }
-    if (book.stock === 0) {
-      alert("Stok buku tidak tersedia");
-      return;
-    }
-    setSelectedBook(book);
-    setShowModal(true);
-  };
-
-  const handleConfirmBorrow = async () => {
-    if (!selectedBook || !userEmail) return;
-
-    try {
-      const res = await fetch("/api/borrow/request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-email": userEmail,
-        },
-        body: JSON.stringify({
-          bookId: selectedBook.id,
-        }),
-      });
-
-      if (res.ok) {
-        alert("Permintaan peminjaman berhasil dibuat!");
-        setShowModal(false);
-        setSelectedBook(null);
-        fetchBorrowRequests();
-      } else {
-        const error = await res.json();
-        alert("Error: " + error.message);
-      }
-    } catch (error) {
-      alert("Error: " + (error as Error).message);
     }
   };
 
@@ -273,7 +227,7 @@ export default function BookCategoryPage() {
                 </div>
 
                 <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
-                  <div className="mb-3">
+                  <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
                       {book.author}
                     </p>
@@ -281,18 +235,6 @@ export default function BookCategoryPage() {
                       {book.title}
                     </h3>
                   </div>
-
-                  <button
-                    onClick={(e) => handleBorrowClick(e, book)}
-                    disabled={book.stock === 0}
-                    className={`w-full py-2 px-3 rounded font-semibold text-sm transition ${
-                      book.stock > 0
-                        ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
-                  >
-                    Ajukan Peminjaman
-                  </button>
                 </div>
               </div>
             </Link>
@@ -369,67 +311,6 @@ export default function BookCategoryPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Borrow Modal */}
-      {showModal && selectedBook && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Ajukan Peminjaman
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Judul Buku</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {selectedBook.title}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Pengarang</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {selectedBook.author}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Kategori</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {selectedBook.category?.name}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Rak</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {selectedBook.shelf?.name}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition font-semibold"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleConfirmBorrow}
-                className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
-              >
-                Pinjam
-              </button>
             </div>
           </div>
         </div>
