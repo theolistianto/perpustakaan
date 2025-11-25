@@ -1,219 +1,348 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { DivideSquareIcon } from "lucide-react";
+import { FileText, CheckCircle, Clock, XCircle, Search, X, Trash2 } from "lucide-react";
 
-export default function PeminjamanPage() {
-  const [borrowings, setBorrowings] = useState([]);
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
 
-  // Modal tambah pinjam
-  const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({
-    userId: "",
-    bookId: "",
-    borrowDate: "",
-    dueDate: "",
-  });
+interface BorrowRequest {
+  id: number;
+  status: string;
+  borrowDate: string;
+  book: {
+    id: number;
+    title: string;
+    author: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
 
-  const fetchData = () => {
-    const params = new URLSearchParams();
-    if (month) params.append("month", month);
-    if (year) params.append("year", year);
+export default function PeminjamPage() {
+  const [requests, setRequests] = useState<BorrowRequest[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<BorrowRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [users, setUsers] = useState<User[]>([]);
+  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-    fetch(`/api/borrow/list?${params.toString()}`)
-      .then((res) => res.json())
-      .then(setBorrowings);
+  useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    setUserEmail(email);
+    fetchAllRequests();
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("/api/members");
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
-  useEffect(fetchData, []);
-
-  const handleReturn = async (id: number) => {
-    await fetch("/api/borrow/return", {
-      method: "POST",
-      body: JSON.stringify({ id }),
-    });
-    fetchData();
+  const fetchAllRequests = async () => {
+    try {
+      const res = await fetch("/api/borrow/all-requests", {
+        headers: { "x-user-email": userEmail || "" },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setRequests(data);
+        setFilteredRequests(data);
+      }
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmitBorrow = async () => {
-    if (!form.userId || isNaN(Number(form.userId))) {
-      alert("ID Anggota tidak valid!");
-      return;
-    }
-    if (!form.bookId || isNaN(Number(form.bookId))) {
-      alert("ID Buku tidak valid!");
-      return;
-    }
-    if (!form.borrowDate || !form.dueDate) {
-      alert("Tanggal tidak boleh kosong!");
-      return;
-    }
+  const handleApprove = async (requestId: number) => {
+    try {
+      const res = await fetch(`/api/borrow/request/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      });
 
-    await fetch("/api/borrow/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    setShowAdd(false);
-    fetchData();
+      if (res.ok) {
+        alert("Permintaan disetujui!");
+        fetchAllRequests();
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
   };
+
+  const handleDelete = async (requestId: number) => {
+    if (!confirm("Hapus permintaan peminjaman ini?")) return;
+
+    try {
+      const res = await fetch(`/api/borrow/request/${requestId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        alert("Permintaan dihapus!");
+        fetchAllRequests();
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
+
+  useEffect(() => {
+    let filtered = requests;
+
+    // Filter by user
+    if (selectedUser) {
+      filtered = filtered.filter((r) => r.user.id === selectedUser.id);
+    }
+
+    // Filter by status
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((r) => r.status === statusFilter);
+    }
+
+    setFilteredRequests(filtered);
+  }, [statusFilter, selectedUser, requests]);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      const results = users.filter((user) =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm, users]);
+
+  const getStatusIcon = (status: string) => {
+    if (status === "pending") return <Clock className="w-5 h-5 text-yellow-600" />;
+    if (status === "approved") return <CheckCircle className="w-5 h-5 text-green-600" />;
+    if (status === "rejected") return <XCircle className="w-5 h-5 text-red-600" />;
+    return null;
+  };
+
+  const getStatusColor = (status: string) => {
+    if (status === "pending")
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
+    if (status === "approved")
+      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
+    if (status === "rejected")
+      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+    return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
+  };
+
+  const getStatusText = (status: string) => {
+    if (status === "pending") return "Menunggu";
+    if (status === "approved") return "Silahkan ambil di resepsionis";
+    if (status === "rejected") return "Ditolak";
+    return status;
+  };
+
+  if (loading)
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 dark:text-gray-400">Memuat...</p>
+      </div>
+    );
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-xl font-bold">📚 Data Peminjaman Buku</h1>
+    <div className="max-w-7xl mx-auto p-4 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <FileText className="w-8 h-8 text-blue-600" />
+          Kelola Peminjam
+        </h1>
+      </div>
 
-      {/* Filter */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Filter Peminjaman</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3 items-end">
-          <Link href="/dashboard/peminjam/tamabah">
-            <Button className="bg-blue-600 text-white">+ Tambah Pinjam</Button>
-          </Link>
+      {/* Search and Filter */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari peminjam..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-          <div>
-            <label>Bulan</label>
-            <select
-              className="border p-2 rounded"
-              onChange={(e) => setMonth(e.target.value)}
-            >
-              <option value="">Semua</option>
-              <option value="01">Januari</option>
-              <option value="02">Februari</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Tahun</label>
-            <select
-              className="border p-2 rounded"
-              onChange={(e) => setYear(e.target.value)}
-            >
-              <option value="">Semua</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-            </select>
-          </div>
-
-          <Button onClick={fetchData}>Cari</Button>
-          <Button variant="secondary" onClick={() => window.location.reload()}>
-            Refresh
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* TABLE */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Data Semua Peminjaman</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <table className="w-full border">
-            <thead>
-              <tr className="bg-black text-left">
-                <th className="p-2 border">No</th>
-                <th className="p-2 border">No Pinjam</th>
-                <th className="p-2 border">ID Anggota</th>
-                <th className="p-2 border">Nama</th>
-                <th className="p-2 border">Pinjam</th>
-                <th className="p-2 border">Balik</th>
-                <th className="p-2 border">Status</th>
-                <th className="p-2 border">Denda</th>
-                <th className="p-2 border">Aksi</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {borrowings.length === 0 && (
-                <tr>
-                  <td colSpan={9} className="p-3 text-center text-gray-500">
-                    Tidak ada data peminjaman
-                  </td>
-                </tr>
-              )}
-
-              {borrowings.map((b: any, i) => (
-                <tr key={b.id}>
-                  <td className="p-2 border">{i + 1}</td>
-                  <td className="p-2 border">PJ{b.id}</td>
-                  <td className="p-2 border">{b.user.id}</td>
-                  <td className="p-2 border">{b.user.name}</td>
-                  <td className="p-2 border">{b.borrowDate.slice(0, 10)}</td>
-                  <td className="p-2 border">{b.dueDate.slice(0, 10)}</td>
-                  <td className="p-2 border">{b.status}</td>
-                  <td className="p-2 border text-red-600">
-                    {b.fine ? `Rp${b.fine.toLocaleString()}` : "-"}
-                  </td>
-                  <td className="p-2 flex gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-yellow-600 text-white"
-                      onClick={() => handleReturn(b.id)}
+            {/* User Search Results */}
+            {searchResults.length > 0 && !selectedUser && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
+                <div className="max-h-64 overflow-y-auto">
+                  {searchResults.map((user) => (
+                    <button
+                      key={user.id}
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setSearchResults([]);
+                      }}
+                      className="w-full text-left px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
                     >
-                      Kembalikan
-                    </Button>
-                    <Button size="sm" className="bg-blue-600 text-white">
-                      👁️
-                    </Button>
-                    <Button size="sm" className="bg-red-600 text-white">
-                      🗑️
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {user.name}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {user.email}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">Semua Status</option>
+            <option value="pending">Menunggu</option>
+            <option value="approved">Disetujui</option>
+            <option value="rejected">Ditolak</option>
+          </select>
+        </div>
 
-      {/* MODAL TAMBAH PINJAM */}
-      {showAdd && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-xl w-[400px] space-y-3">
-            <h2 className="text-lg font-bold">Tambah Peminjaman</h2>
-
-            <input
-              className="border p-2 w-full rounded"
-              placeholder="ID Anggota"
-              type="number"
-              onChange={(e) => setForm({ ...form, userId: e.target.value })}
-            />
-
-            <input
-              className="border p-2 w-full rounded"
-              placeholder="ID Buku"
-              type="number"
-              onChange={(e) => setForm({ ...form, bookId: e.target.value })}
-            />
-
-            <input
-              type="date"
-              className="border p-2 w-full rounded"
-              onChange={(e) => setForm({ ...form, borrowDate: e.target.value })}
-            />
-
-            <input
-              type="date"
-              className="border p-2 w-full rounded"
-              onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-            />
-            <div className="flex justify-end gap-2">
-              <Button variant="secondary" onClick={() => setShowAdd(false)}>
-                Batal
-              </Button>
-              <Button
-                className="bg-blue-600 text-white"
-                onClick={handleSubmitBorrow}
+        {/* Selected User Info */}
+        {selectedUser && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {selectedUser.name}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {selectedUser.email}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedUser(null);
+                  setSearchTerm("");
+                }}
+                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
               >
-                Simpan
-              </Button>
+                <X className="w-6 h-6" />
+              </button>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Requests Table */}
+      {filteredRequests.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400">
+            {requests.length === 0
+              ? "Tidak ada permintaan peminjaman"
+              : "Tidak ada hasil yang sesuai dengan pencarian"}
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    ID
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Judul Buku
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Pengarang
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Peminjam
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Email
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Status
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRequests.map((req) => (
+                  <tr
+                    key={req.id}
+                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                  >
+                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                      #{req.id}
+                    </td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                      {req.book.title}
+                    </td>
+                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
+                      {req.book.author}
+                    </td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                      {req.user.name}
+                    </td>
+                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
+                      {req.user.email}
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(req.status)}
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                            req.status
+                          )}`}
+                        >
+                          {getStatusText(req.status)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex gap-2">
+                        {req.status === "pending" && (
+                          <button
+                            onClick={() => handleApprove(req.id)}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm"
+                          >
+                            Terima
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(req.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Hapus
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

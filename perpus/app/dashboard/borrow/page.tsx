@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen, X } from "lucide-react";
+import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen, X, Trash2 } from "lucide-react";
 
 interface Book {
   id: number;
@@ -99,35 +99,16 @@ export default function BorrowPage() {
     }
   };
 
-  const handleApprove = async (requestId: number) => {
-    try {
-      const res = await fetch(`/api/borrow/request/${requestId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "approved" }),
-      });
-
-      if (res.ok) {
-        alert("Permintaan disetujui!");
-        userRole === "admin" ? fetchAllRequests() : fetchUserRequests();
-      }
-    } catch (error) {
-      alert("Error: " + (error as Error).message);
-    }
-  };
-
-  const handleReject = async (requestId: number) => {
-    if (!confirm("Tolak permintaan peminjaman ini?")) return;
+  const handleDelete = async (requestId: number) => {
+    if (!confirm("Hapus permintaan peminjaman ini?")) return;
 
     try {
       const res = await fetch(`/api/borrow/request/${requestId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "rejected" }),
+        method: "DELETE",
       });
 
       if (res.ok) {
-        alert("Permintaan ditolak!");
+        alert("Permintaan dihapus!");
         userRole === "admin" ? fetchAllRequests() : fetchUserRequests();
       }
     } catch (error) {
@@ -170,12 +151,10 @@ export default function BorrowPage() {
   useEffect(() => {
     let filtered = requests;
 
-    // Filter by book
     if (selectedBook) {
       filtered = filtered.filter((r) => r.book.id === selectedBook.id);
     }
 
-    // Filter by status
     if (statusFilter !== "all") {
       filtered = filtered.filter((r) => r.status === statusFilter);
     }
@@ -213,7 +192,7 @@ export default function BorrowPage() {
 
   const getStatusText = (status: string) => {
     if (status === "pending") return "Menunggu";
-    if (status === "approved") return "Disetujui";
+    if (status === "approved") return "Silahkan ambil di resepsionis";
     if (status === "rejected") return "Ditolak";
     return status;
   };
@@ -248,7 +227,6 @@ export default function BorrowPage() {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
-              {/* Book Search Results */}
               {searchResults.length > 0 && !selectedBook && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
                   <div className="max-h-64 overflow-y-auto">
@@ -298,7 +276,6 @@ export default function BorrowPage() {
             </select>
           </div>
 
-          {/* Selected Book Info */}
           {selectedBook && (
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
               <div className="flex items-center justify-between mb-4">
@@ -429,22 +406,13 @@ export default function BorrowPage() {
                     </td>
                     {userRole === "admin" && (
                       <td className="py-4 px-6">
-                        {req.status === "pending" && (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleApprove(req.id)}
-                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm"
-                            >
-                              Terima
-                            </button>
-                            <button
-                              onClick={() => handleReject(req.id)}
-                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm"
-                            >
-                              Tolak
-                            </button>
-                          </div>
-                        )}
+                        <button
+                          onClick={() => handleDelete(req.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Hapus
+                        </button>
                       </td>
                     )}
                   </tr>
