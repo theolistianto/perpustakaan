@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen } from "lucide-react";
+import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen, X } from "lucide-react";
 
 interface Book {
   id: number;
@@ -36,7 +36,8 @@ export default function BorrowPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [books, setBooks] = useState<Book[]>([]);
   const [searchResults, setSearchResults] = useState<Book[]>([]);
-  const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [creatingRequest, setCreatingRequest] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -134,12 +135,44 @@ export default function BorrowPage() {
     }
   };
 
+  const handleBorrowBook = async () => {
+    if (!selectedBook || !userEmail) return;
+
+    setCreatingRequest(true);
+    try {
+      const res = await fetch("/api/borrow/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-email": userEmail,
+        },
+        body: JSON.stringify({
+          bookId: selectedBook.id,
+        }),
+      });
+
+      if (res.ok) {
+        alert("Permintaan peminjaman berhasil dibuat!");
+        setSelectedBook(null);
+        setSearchTerm("");
+        fetchAllRequests();
+      } else {
+        const error = await res.json();
+        alert("Error: " + error.message);
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    } finally {
+      setCreatingRequest(false);
+    }
+  };
+
   useEffect(() => {
     let filtered = requests;
 
     // Filter by book
-    if (selectedBookId) {
-      filtered = filtered.filter((r) => r.book.id === selectedBookId);
+    if (selectedBook) {
+      filtered = filtered.filter((r) => r.book.id === selectedBook.id);
     }
 
     // Filter by status
@@ -148,7 +181,7 @@ export default function BorrowPage() {
     }
 
     setFilteredRequests(filtered);
-  }, [statusFilter, selectedBookId, requests, userRole]);
+  }, [statusFilter, selectedBook, requests, userRole]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -158,7 +191,6 @@ export default function BorrowPage() {
       setSearchResults(results);
     } else {
       setSearchResults([]);
-      setSelectedBookId(null);
     }
   }, [searchTerm, books]);
 
@@ -224,21 +256,17 @@ export default function BorrowPage() {
               />
 
               {/* Book Search Results */}
-              {searchResults.length > 0 && (
+              {searchResults.length > 0 && !selectedBook && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
                   <div className="max-h-64 overflow-y-auto">
                     {searchResults.map((book) => (
                       <button
                         key={book.id}
                         onClick={() => {
-                          setSelectedBookId(book.id);
-                          setSearchTerm(book.title);
+                          setSelectedBook(book);
+                          setSearchResults([]);
                         }}
-                        className={`w-full text-left px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-start gap-3 ${
-                          selectedBookId === book.id
-                            ? "bg-blue-100 dark:bg-blue-900/30"
-                            : ""
-                        }`}
+                        className="w-full text-left px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-start gap-3"
                       >
                         <div className="bg-gray-100 dark:bg-gray-700 rounded p-2 flex-shrink-0">
                           {book.image ? (
@@ -277,19 +305,48 @@ export default function BorrowPage() {
             </select>
           </div>
 
-          {selectedBookId && (
-            <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
-              <p className="text-sm text-blue-800 dark:text-blue-200">
-                Filter aktif: <span className="font-semibold">{searchTerm}</span>
-              </p>
+          {/* Selected Book Info */}
+          {selectedBook && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white dark:bg-gray-800 rounded p-2">
+                    {selectedBook.image ? (
+                      <img
+                        src={selectedBook.image}
+                        alt={selectedBook.title}
+                        className="w-12 h-16 object-cover rounded"
+                      />
+                    ) : (
+                      <BookOpen className="w-12 h-16 text-gray-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {selectedBook.title}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {selectedBook.author}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedBook(null);
+                    setSearchTerm("");
+                  }}
+                  className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
               <button
-                onClick={() => {
-                  setSelectedBookId(null);
-                  setSearchTerm("");
-                }}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-semibold text-sm"
+                onClick={handleBorrowBook}
+                disabled={creatingRequest}
+                className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-semibold transition"
               >
-                Clear
+                {creatingRequest ? "Membuat Permintaan..." : "Ajukan Peminjaman"}
               </button>
             </div>
           )}
