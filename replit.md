@@ -66,12 +66,28 @@ This is optional but recommended to keep your repository clean.
 - **Borrow**: Borrowing transactions with dates and status
 
 ## API Endpoints
-- `/api/auth/login`: User authentication
+- `/api/auth/login`: User authentication with auto-account creation
 - `/api/books`: Book management
 - `/api/members`: Member management
 - `/api/borrow`: Borrowing operations
 - `/api/dashboard`: Dashboard statistics
 - `/api/seed`: Database seeding (GET request)
+
+## User Roles & Features
+
+### Admin (admin@perpus.id / admin123)
+- Full dashboard access
+- Add, edit, delete books
+- View all members
+- Manage borrowing records
+- Access settings
+- Full navbar with all features
+
+### Member/Visitor (visitor@perpus.id / visitor123)
+- Browse book catalog
+- View borrowing history
+- Limited navbar (only Books and "Peminjaman Saya")
+- No admin functions
 
 ## Running the Application
 The application is configured to run automatically via the Next.js Dev Server workflow on port 5000.
@@ -87,6 +103,23 @@ This ensures that even on fresh deployments, the database will be properly initi
 To seed the database with sample data, visit: `/api/seed`
 
 ## Recent Changes (November 25, 2025)
+
+### Authentication System
+- ✅ Created professional login page at `/auth/login` with modern UI
+- ✅ Implemented 2-role authentication system:
+  - **Pengunjung (Member)**: Limited access to books catalog and "Peminjaman Saya"
+  - **Admin**: Full access to dashboard, books, members, borrowing, and settings
+- ✅ Created demo accounts that auto-create on first login:
+  - **Member**: visitor@perpus.id / visitor123
+  - **Admin**: admin@perpus.id / admin123
+- ✅ Login API auto-creates demo accounts if they don't exist
+- ✅ Role-based navbar - different menu items for each role
+- ✅ Protected dashboard layout with authentication check
+- ✅ Logout functionality that clears localStorage and redirects to home
+- ✅ Role stored in localStorage for client-side access
+- ✅ Token-based authentication with JWT
+
+### Previous Features
 - Created professional landing page at `/` with navbar, hero section, services, and CTA
 - Added navbar component with logo, navigation menu, and login button
 - Implemented "Tambah Buku" (Add Book) page at `/dashboard/books/tambah`

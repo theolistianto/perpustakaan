@@ -1,121 +1,244 @@
 "use client";
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { User, Lock, Shield } from "lucide-react";
+import { User, Lock, Shield, BookOpen, AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("member");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = async () => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, role }),
-    });
-    if (res.ok) {
-      router.push("/dashboard/dashboard");
-    } else {
-      alert("Login failed");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("userRole", data.role);
+        localStorage.setItem("userEmail", data.email);
+        localStorage.setItem("token", data.token);
+        
+        if (data.role === "admin") {
+          router.push("/dashboard/dashboard");
+        } else {
+          router.push("/dashboard/books");
+        }
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || "Login gagal. Periksa email dan password Anda.");
+      }
+    } catch (err) {
+      setError("Terjadi kesalahan. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const demoAccounts = [
+    {
+      role: "member",
+      email: "visitor@perpus.id",
+      password: "visitor123",
+      description: "Akun Pengunjung - Akses terbatas ke katalog buku",
+    },
+    {
+      role: "admin",
+      email: "admin@perpus.id",
+      password: "admin123",
+      description: "Akun Admin - Akses penuh ke semua fitur",
+    },
+  ];
+
+  const quickLogin = (email: string, password: string, selectedRole: string) => {
+    setEmail(email);
+    setPassword(password);
+    setRole(selectedRole);
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card className="w-full max-w-md bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-2xl border-0">
-          <CardHeader className="text-center">
-            <motion.div
-              initial={{ y: -20 }}
-              animate={{ y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Selamat Datang
-              </CardTitle>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Login Form */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-7 h-7 text-white" />
+                </div>
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Perpus System
+              </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Masuk ke Sistem Perpustakaan
               </p>
-            </motion.div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="relative"
-            >
-              <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
-              />
-            </motion.div>
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="relative"
-            >
-              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10"
-              />
-            </motion.div>
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Select onValueChange={setRole}>
-                <SelectTrigger className="relative">
-                  <Shield className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <SelectValue placeholder="Pilih Role" className="pl-10" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="member">Anggota Biasa</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </motion.div>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Button
-                onClick={handleLogin}
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105"
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Role Selection */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Tipe Login
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRole("member")}
+                    className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+                      role === "member"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    Pengunjung
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole("admin")}
+                    className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+                      role === "admin"
+                        ? "bg-purple-600 text-white"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    Admin
+                  </button>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Email
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email Anda"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password Anda"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
               >
-                Masuk
-              </Button>
-            </motion.div>
-          </CardContent>
-        </Card>
-      </motion.div>
+                {loading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Sedang login...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="w-5 h-5" />
+                    Masuk
+                  </>
+                )}
+              </button>
+
+              {/* Back to Home */}
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
+                  Kembali ke Halaman Utama
+                </Link>
+              </div>
+            </form>
+          </div>
+
+          {/* Demo Accounts Info */}
+          <div className="space-y-4">
+            <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-white">
+              <h2 className="text-2xl font-bold mb-4">Akun Demo</h2>
+              <p className="text-white/80 mb-6">
+                Gunakan akun demo berikut untuk mencoba sistem. Klik tombol untuk mengisi otomatis.
+              </p>
+
+              <div className="space-y-4">
+                {demoAccounts.map((account, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition cursor-pointer"
+                    onClick={() => quickLogin(account.email, account.password, account.role)}
+                  >
+                    <div className="flex items-start gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        account.role === "admin"
+                          ? "bg-purple-400"
+                          : "bg-blue-400"
+                      }`}>
+                        <Shield className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold">
+                          {account.role === "admin" ? "Admin" : "Pengunjung"}
+                        </p>
+                        <p className="text-sm text-white/80">{account.description}</p>
+                      </div>
+                    </div>
+                    <div className="bg-white/10 rounded p-2 text-sm font-mono">
+                      <p>Email: {account.email}</p>
+                      <p>Password: {account.password}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 p-4 bg-blue-400/20 border border-blue-400/50 rounded-lg">
+                <p className="text-sm text-white/90">
+                  💡 <strong>Tips:</strong> Klik pada akun demo untuk mengisi email dan password secara otomatis.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
