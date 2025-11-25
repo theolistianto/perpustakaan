@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, CheckCircle, Clock, XCircle, Search, X, Trash2 } from "lucide-react";
+import { FileText, Search, X, Trash2, Check } from "lucide-react";
 
 interface User {
   id: number;
@@ -31,7 +31,6 @@ export default function PeminjamPage() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [users, setUsers] = useState<User[]>([]);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -109,18 +108,12 @@ export default function PeminjamPage() {
   useEffect(() => {
     let filtered = requests;
 
-    // Filter by user
     if (selectedUser) {
       filtered = filtered.filter((r) => r.user.id === selectedUser.id);
     }
 
-    // Filter by status
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((r) => r.status === statusFilter);
-    }
-
     setFilteredRequests(filtered);
-  }, [statusFilter, selectedUser, requests]);
+  }, [selectedUser, requests]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -132,30 +125,6 @@ export default function PeminjamPage() {
       setSearchResults([]);
     }
   }, [searchTerm, users]);
-
-  const getStatusIcon = (status: string) => {
-    if (status === "pending") return <Clock className="w-5 h-5 text-yellow-600" />;
-    if (status === "approved") return <CheckCircle className="w-5 h-5 text-green-600" />;
-    if (status === "rejected") return <XCircle className="w-5 h-5 text-red-600" />;
-    return null;
-  };
-
-  const getStatusColor = (status: string) => {
-    if (status === "pending")
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
-    if (status === "approved")
-      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
-    if (status === "rejected")
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
-    return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
-  };
-
-  const getStatusText = (status: string) => {
-    if (status === "pending") return "Menunggu";
-    if (status === "approved") return "Silahkan ambil di resepsionis";
-    if (status === "rejected") return "Ditolak";
-    return status;
-  };
 
   if (loading)
     return (
@@ -211,16 +180,6 @@ export default function PeminjamPage() {
               </div>
             )}
           </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">Semua Status</option>
-            <option value="pending">Menunggu</option>
-            <option value="approved">Disetujui</option>
-            <option value="rejected">Ditolak</option>
-          </select>
         </div>
 
         {/* Selected User Info */}
@@ -280,9 +239,6 @@ export default function PeminjamPage() {
                     Email
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                    Status
-                  </th>
-                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Aksi
                   </th>
                 </tr>
@@ -309,24 +265,13 @@ export default function PeminjamPage() {
                       {req.user.email}
                     </td>
                     <td className="py-4 px-6">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(req.status)}
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                            req.status
-                          )}`}
-                        >
-                          {getStatusText(req.status)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-6">
                       <div className="flex gap-2">
                         {req.status === "pending" && (
                           <button
                             onClick={() => handleApprove(req.id)}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm"
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm flex items-center gap-2"
                           >
+                            <Check className="w-4 h-4" />
                             Terima
                           </button>
                         )}
