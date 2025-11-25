@@ -87,13 +87,22 @@ This ensures that even on fresh deployments, the database will be properly initi
 To seed the database with sample data, visit: `/api/seed`
 
 ## Recent Changes (November 25, 2025)
+- Created professional landing page at `/` with navbar, hero section, services, and CTA
+- Added navbar component with logo, navigation menu, and login button
+- Implemented "Tambah Buku" (Add Book) page at `/dashboard/books/tambah`
+- Added image upload support for book covers (base64 storage in database)
+- Updated book catalog with image thumbnails display
+- Updated Books API to handle image data
+- Added image field to Book model in Prisma schema
+- Created database migration for book image support
+- Updated books listing page to fetch and display from API
+- Simplified landing page structure for better maintainability
 - Migrated from PostgreSQL to SQLite for simplified Replit deployment
 - Regenerated Prisma migrations with SQLite-specific syntax (removed PostgreSQL-specific DDL)
 - Configured Next.js to run on port 5000 with 0.0.0.0 host binding
 - Set up environment variables in Replit shared environment (DATABASE_URL, JWT_SECRET)
 - Created fresh SQLite migrations compatible with Replit
 - Added startup scripts that automatically run database migrations before server start
-- Configured workflow for automatic server startup on port 5000 with migration step
 - Added comprehensive .gitignore for Node.js/Next.js and excluded SQLite database files
 - Updated deployment configuration for autoscale deployment target with production startup script
 - Ensured database auto-initialization for fresh deployments

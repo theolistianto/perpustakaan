@@ -43,10 +43,6 @@ externalPort = 80
 localPort = 42407
 externalPort = 3001
 
-[[ports]]
-localPort = 44975
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "cd perpus && bash scripts/production-startup.sh"]
