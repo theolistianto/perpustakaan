@@ -195,27 +195,20 @@ export default function BorrowPage() {
   }, [searchTerm, books]);
 
   const getStatusIcon = (status: string) => {
-    if (status === "pending") return <Clock className="w-5 h-5" />;
-    if (status === "approved") return <CheckCircle className="w-5 h-5" />;
-    if (status === "rejected") return <XCircle className="w-5 h-5" />;
+    if (status === "pending") return <Clock className="w-5 h-5 text-yellow-600" />;
+    if (status === "approved") return <CheckCircle className="w-5 h-5 text-green-600" />;
+    if (status === "rejected") return <XCircle className="w-5 h-5 text-red-600" />;
     return null;
   };
 
-  const getStatusBgColor = (status: string) => {
+  const getStatusColor = (status: string) => {
     if (status === "pending")
-      return "bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500";
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
     if (status === "approved")
-      return "bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500";
+      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
     if (status === "rejected")
-      return "bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500";
-    return "bg-gray-50 dark:bg-gray-700/20";
-  };
-
-  const getStatusTextColor = (status: string) => {
-    if (status === "pending") return "text-yellow-800 dark:text-yellow-200";
-    if (status === "approved") return "text-green-800 dark:text-green-200";
-    if (status === "rejected") return "text-red-800 dark:text-red-200";
-    return "text-gray-800 dark:text-gray-200";
+      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+    return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
   };
 
   const getStatusText = (status: string) => {
@@ -353,7 +346,7 @@ export default function BorrowPage() {
         </div>
       )}
 
-      {/* Requests */}
+      {/* Requests Table */}
       {filteredRequests.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
           <p className="text-gray-500 dark:text-gray-400">
@@ -363,64 +356,102 @@ export default function BorrowPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filteredRequests.map((req) => (
-            <div
-              key={req.id}
-              className={`rounded-lg shadow p-6 ${getStatusBgColor(req.status)}`}
-            >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                      #{req.id}
-                    </span>
-                    <div
-                      className={`flex items-center gap-2 px-3 py-1 rounded-full font-semibold text-sm ${getStatusTextColor(
-                        req.status
-                      )}`}
-                    >
-                      {getStatusIcon(req.status)}
-                      {getStatusText(req.status)}
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    {req.book.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                    Pengarang: {req.book.author}
-                  </p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    ID
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Judul Buku
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Pengarang
+                  </th>
                   {userRole === "admin" && (
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <p>
-                        Peminjam: <span className="font-semibold">{req.user.name}</span>
-                      </p>
-                      <p>
-                        Email: <span className="font-semibold">{req.user.email}</span>
-                      </p>
-                    </div>
+                    <>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                        Peminjam
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                        Email
+                      </th>
+                    </>
                   )}
-                </div>
-
-                {userRole === "admin" && req.status === "pending" && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleApprove(req.id)}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm whitespace-nowrap"
-                    >
-                      Terima
-                    </button>
-                    <button
-                      onClick={() => handleReject(req.id)}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm whitespace-nowrap"
-                    >
-                      Tolak
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Status
+                  </th>
+                  {userRole === "admin" && (
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                      Aksi
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRequests.map((req) => (
+                  <tr
+                    key={req.id}
+                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                  >
+                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                      #{req.id}
+                    </td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                      {req.book.title}
+                    </td>
+                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
+                      {req.book.author}
+                    </td>
+                    {userRole === "admin" && (
+                      <>
+                        <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                          {req.user.name}
+                        </td>
+                        <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
+                          {req.user.email}
+                        </td>
+                      </>
+                    )}
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(req.status)}
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                            req.status
+                          )}`}
+                        >
+                          {getStatusText(req.status)}
+                        </span>
+                      </div>
+                    </td>
+                    {userRole === "admin" && (
+                      <td className="py-4 px-6">
+                        {req.status === "pending" && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleApprove(req.id)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm"
+                            >
+                              Terima
+                            </button>
+                            <button
+                              onClick={() => handleReject(req.id)}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm"
+                            >
+                              Tolak
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
