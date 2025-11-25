@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Search, BookOpen, Users, ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
+import Navbar from "@/components/ui/navbar";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function LandingPage() {
 
   return (
     <div>
+      <Navbar />
       
       <section className="h-96 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
