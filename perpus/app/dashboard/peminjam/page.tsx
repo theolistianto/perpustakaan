@@ -80,8 +80,8 @@ export default function PeminjamPage() {
 
       if (res.ok) {
         alert("Permintaan disetujui!");
-        // Update local state to remove the approved request from pending
-        setRequests(requests.filter(r => r.id !== requestId));
+        // Refresh table but keep it visible
+        fetchAllRequests();
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
@@ -98,8 +98,8 @@ export default function PeminjamPage() {
 
       if (res.ok) {
         alert("Permintaan dihapus!");
-        // Update local state to remove the deleted request
-        setRequests(requests.filter(r => r.id !== requestId));
+        // Refresh table but keep it visible
+        fetchAllRequests();
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
