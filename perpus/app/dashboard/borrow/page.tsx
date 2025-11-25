@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, CheckCircle, Clock, XCircle, Search } from "lucide-react";
+import { FileText, CheckCircle, Clock, XCircle, Search, BookOpen } from "lucide-react";
+
+interface Book {
+  id: number;
+  title: string;
+  author: string;
+  image?: string;
+}
 
 interface BorrowRequest {
   id: number;
@@ -27,6 +34,9 @@ export default function BorrowPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [books, setBooks] = useState<Book[]>([]);
+  const [searchResults, setSearchResults] = useState<Book[]>([]);
+  const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -36,10 +46,23 @@ export default function BorrowPage() {
 
     if (role === "admin") {
       fetchAllRequests();
+      fetchBooks();
     } else {
       fetchUserRequests();
     }
   }, []);
+
+  const fetchBooks = async () => {
+    try {
+      const res = await fetch("/api/books");
+      if (res.ok) {
+        const data = await res.json();
+        setBooks(data);
+      }
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
 
   const fetchAllRequests = async () => {
     try {
@@ -114,23 +137,30 @@ export default function BorrowPage() {
   useEffect(() => {
     let filtered = requests;
 
-    if (userRole === "admin") {
-      if (searchTerm) {
-        filtered = filtered.filter(
-          (r) =>
-            r.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            r.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            r.book.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
+    // Filter by book
+    if (selectedBookId) {
+      filtered = filtered.filter((r) => r.book.id === selectedBookId);
+    }
 
-      if (statusFilter !== "all") {
-        filtered = filtered.filter((r) => r.status === statusFilter);
-      }
+    // Filter by status
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((r) => r.status === statusFilter);
     }
 
     setFilteredRequests(filtered);
-  }, [searchTerm, statusFilter, requests, userRole]);
+  }, [statusFilter, selectedBookId, requests, userRole]);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      const results = books.filter((book) =>
+        book.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+      setSelectedBookId(null);
+    }
+  }, [searchTerm, books]);
 
   const getStatusIcon = (status: string) => {
     if (status === "pending") return <Clock className="w-5 h-5" />;
@@ -140,9 +170,12 @@ export default function BorrowPage() {
   };
 
   const getStatusBgColor = (status: string) => {
-    if (status === "pending") return "bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500";
-    if (status === "approved") return "bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500";
-    if (status === "rejected") return "bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500";
+    if (status === "pending")
+      return "bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500";
+    if (status === "approved")
+      return "bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500";
+    if (status === "rejected")
+      return "bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500";
     return "bg-gray-50 dark:bg-gray-700/20";
   };
 
@@ -184,11 +217,53 @@ export default function BorrowPage() {
               <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Cari nama peminjam atau judul buku..."
+                placeholder="Cari buku..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+
+              {/* Book Search Results */}
+              {searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
+                  <div className="max-h-64 overflow-y-auto">
+                    {searchResults.map((book) => (
+                      <button
+                        key={book.id}
+                        onClick={() => {
+                          setSelectedBookId(book.id);
+                          setSearchTerm(book.title);
+                        }}
+                        className={`w-full text-left px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-start gap-3 ${
+                          selectedBookId === book.id
+                            ? "bg-blue-100 dark:bg-blue-900/30"
+                            : ""
+                        }`}
+                      >
+                        <div className="bg-gray-100 dark:bg-gray-700 rounded p-2 flex-shrink-0">
+                          {book.image ? (
+                            <img
+                              src={book.image}
+                              alt={book.title}
+                              className="w-12 h-16 object-cover rounded"
+                            />
+                          ) : (
+                            <BookOpen className="w-12 h-16 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 dark:text-white truncate">
+                            {book.title}
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                            {book.author}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <select
               value={statusFilter}
@@ -201,10 +276,22 @@ export default function BorrowPage() {
               <option value="rejected">Ditolak</option>
             </select>
           </div>
-          {(searchTerm || statusFilter !== "all") && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Menampilkan {filteredRequests.length} dari {requests.length} permintaan
-            </p>
+
+          {selectedBookId && (
+            <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                Filter aktif: <span className="font-semibold">{searchTerm}</span>
+              </p>
+              <button
+                onClick={() => {
+                  setSelectedBookId(null);
+                  setSearchTerm("");
+                }}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-semibold text-sm"
+              >
+                Clear
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -231,7 +318,11 @@ export default function BorrowPage() {
                     <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
                       #{req.id}
                     </span>
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full font-semibold text-sm ${getStatusTextColor(req.status)}`}>
+                    <div
+                      className={`flex items-center gap-2 px-3 py-1 rounded-full font-semibold text-sm ${getStatusTextColor(
+                        req.status
+                      )}`}
+                    >
                       {getStatusIcon(req.status)}
                       {getStatusText(req.status)}
                     </div>
@@ -244,8 +335,12 @@ export default function BorrowPage() {
                   </p>
                   {userRole === "admin" && (
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <p>Peminjam: <span className="font-semibold">{req.user.name}</span></p>
-                      <p>Email: <span className="font-semibold">{req.user.email}</span></p>
+                      <p>
+                        Peminjam: <span className="font-semibold">{req.user.name}</span>
+                      </p>
+                      <p>
+                        Email: <span className="font-semibold">{req.user.email}</span>
+                      </p>
                     </div>
                   )}
                 </div>
