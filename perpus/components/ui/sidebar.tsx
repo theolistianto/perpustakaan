@@ -46,17 +46,6 @@ export default function Sidebar() {
         </p>
       </div>
 
-      {/* Add Book Button - Only for Admin */}
-      {userRole === "admin" && (
-        <button
-          onClick={() => router.push("/dashboard/books/tambah")}
-          className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Tambah Buku
-        </button>
-      )}
-
       {/* Menu Navigation */}
       <nav className="space-y-2 flex-1">
         {menuItems.map((item) => (
