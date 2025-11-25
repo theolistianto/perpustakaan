@@ -36,6 +36,7 @@ model Book {
   shelfId     Int
   stock       Int      @default(0)
   totalStock  Int      @default(0)
+  image       String?
   category    Category @relation(fields: [categoryId], references: [id])
   shelf       Shelf    @relation(fields: [shelfId], references: [id])
   borrows     Borrow[]
