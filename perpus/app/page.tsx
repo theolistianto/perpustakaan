@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Search, BookOpen, Users, ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import Navbar from "@/components/ui/navbar";
+import HomeSidebar from "@/components/ui/home-sidebar";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function LandingPage() {
 
   return (
     <div>
+      <HomeSidebar />
       <Navbar />
       
       <section className="h-96 bg-gradient-to-r from-blue-600 to-purple-600">
