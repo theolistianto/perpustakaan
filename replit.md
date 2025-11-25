@@ -99,6 +99,15 @@ The application uses a startup script (`scripts/startup.sh`) that:
 
 This ensures that even on fresh deployments, the database will be properly initialized.
 
+### Login Process
+1. Visit: `/auth/login`
+2. Select role (Pengunjung/Member or Admin)
+3. Enter demo credentials or click demo account cards to auto-fill
+4. Click "Masuk" button
+5. System auto-creates account on first login if it doesn't exist
+6. JWT token is generated and stored in localStorage
+7. Role-based redirect happens automatically
+
 ### Seeding the Database
 To seed the database with sample data, visit: `/api/seed`
 
