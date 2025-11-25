@@ -3,53 +3,68 @@ import { prisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    // Seed Category
+    // Create categories
     await prisma.category.createMany({
-      data: [{ name: "Fiksi" }, { name: "Non-Fiksi" }, { name: "Teknologi" }],
+      data: [
+        { name: "Teknologi" },
+        { name: "Fiksi" },
+        { name: "Non-Fiksi" },
+        { name: "Sejarah" },
+        { name: "Pendidikan" },
+      ],
     });
 
-    // Seed Shelf
+    // Create shelves
     await prisma.shelf.createMany({
-      data: [{ name: "Rak A" }, { name: "Rak B" }, { name: "Rak C" }],
+      data: [
+        { name: "Rak A" },
+        { name: "Rak B" },
+        { name: "Rak C" },
+        { name: "Rak D" },
+      ],
     });
 
-    // Ambil kategori & rak
-    const cat1 = await prisma.category.findFirst();
-    const shelf1 = await prisma.shelf.findFirst();
+    // Create sample books
+    await prisma.book.createMany({
+      data: [
+        {
+          title: "Belajar Next.js",
+          author: "John Doe",
+          categoryId: 1,
+          shelfId: 1,
+          stock: 5,
+          totalStock: 5,
+          image: null,
+        },
+        {
+          title: "Dunia Fantasi",
+          author: "Jane Smith",
+          categoryId: 2,
+          shelfId: 2,
+          stock: 3,
+          totalStock: 3,
+          image: null,
+        },
+      ],
+    });
 
-    // Seed Books
-    if (cat1 && shelf1) {
-      await prisma.book.createMany({
-        data: [
-          {
-            title: "Atomic Habits",
-            author: "James Clear",
-            categoryId: cat1.id,
-            shelfId: shelf1.id,
-          },
-          {
-            title: "Clean Code",
-            author: "Robert C. Martin",
-            categoryId: cat1.id,
-            shelfId: shelf1.id,
-          },
-          {
-            title: "Madilog",
-            author: "James Clear",
-            categoryId: cat1.id,
-            shelfId: shelf1.id,
-          },
-          {
-            title: "bottle",
-            author: "Robert C. Martin",
-            categoryId: cat1.id,
-            shelfId: shelf1.id,
-          },
-        ],
-      });
-    }
-    return NextResponse.json({ message: "Seed sukses!" });
+    const categoryCount = await prisma.category.count();
+    const shelfCount = await prisma.shelf.count();
+    const bookCount = await prisma.book.count();
+
+    return NextResponse.json({
+      message: "Database seeded successfully",
+      stats: {
+        categories: categoryCount,
+        shelves: shelfCount,
+        books: bookCount,
+      },
+    });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Seed error:", error);
+    return NextResponse.json(
+      { message: error.message || "Seeding failed" },
+      { status: 400 }
+    );
   }
 }

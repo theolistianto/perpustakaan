@@ -111,7 +111,18 @@ This ensures that even on fresh deployments, the database will be properly initi
 ### Seeding the Database
 To seed the database with sample data, visit: `/api/seed`
 
+This endpoint creates:
+- 5 sample categories (Teknologi, Fiksi, Non-Fiksi, Sejarah, Pendidikan)
+- 4 sample shelves (Rak A, Rak B, Rak C, Rak D)
+- 2 sample books for reference
+
 ## Recent Changes (November 25, 2025)
+
+### Book Management
+- ✅ Created `/api/seed` endpoint to populate database with sample categories, shelves, and books
+- ✅ Fixed "Tambah Buku" form - now works correctly after database seeding
+- ✅ Add book form validates foreign keys properly
+- ✅ Books can now be created with category and shelf associations
 
 ### Authentication System
 - ✅ Created professional login page at `/auth/login` with modern UI
