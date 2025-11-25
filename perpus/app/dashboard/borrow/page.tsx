@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, CheckCircle, Clock, XCircle } from "lucide-react";
+import { FileText, CheckCircle, Clock, XCircle, Search } from "lucide-react";
 
 interface BorrowRequest {
   id: number;
@@ -21,9 +21,12 @@ interface BorrowRequest {
 
 export default function BorrowPage() {
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<BorrowRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -46,6 +49,7 @@ export default function BorrowPage() {
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
+        setFilteredRequests(data);
       }
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -62,6 +66,7 @@ export default function BorrowPage() {
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
+        setFilteredRequests(data);
       }
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -106,6 +111,27 @@ export default function BorrowPage() {
     }
   };
 
+  useEffect(() => {
+    let filtered = requests;
+
+    if (userRole === "admin") {
+      if (searchTerm) {
+        filtered = filtered.filter(
+          (r) =>
+            r.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.book.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      if (statusFilter !== "all") {
+        filtered = filtered.filter((r) => r.status === statusFilter);
+      }
+    }
+
+    setFilteredRequests(filtered);
+  }, [searchTerm, statusFilter, requests, userRole]);
+
   const getStatusIcon = (status: string) => {
     if (status === "pending") return <Clock className="w-5 h-5 text-yellow-600" />;
     if (status === "approved") return <CheckCircle className="w-5 h-5 text-green-600" />;
@@ -146,9 +172,47 @@ export default function BorrowPage() {
         </h1>
       </div>
 
-      {requests.length === 0 ? (
+      {/* Search and Filter - Admin Only */}
+      {userRole === "admin" && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Cari nama peminjam atau judul buku..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Semua Status</option>
+              <option value="pending">Menunggu</option>
+              <option value="approved">Disetujui</option>
+              <option value="rejected">Ditolak</option>
+            </select>
+          </div>
+          {(searchTerm || statusFilter !== "all") && (
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Menampilkan {filteredRequests.length} dari {requests.length} permintaan
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Requests Table */}
+      {filteredRequests.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
-          <p className="text-gray-500 dark:text-gray-400">Tidak ada permintaan peminjaman</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            {requests.length === 0
+              ? "Tidak ada permintaan peminjaman"
+              : "Tidak ada hasil yang sesuai dengan pencarian"}
+          </p>
         </div>
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
@@ -166,9 +230,14 @@ export default function BorrowPage() {
                     Pengarang
                   </th>
                   {userRole === "admin" && (
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                      Nama Peminjam
-                    </th>
+                    <>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                        Peminjam
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                        Email
+                      </th>
+                    </>
                   )}
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Status
@@ -181,7 +250,7 @@ export default function BorrowPage() {
                 </tr>
               </thead>
               <tbody>
-                {requests.map((req) => (
+                {filteredRequests.map((req) => (
                   <tr
                     key={req.id}
                     className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
@@ -196,9 +265,14 @@ export default function BorrowPage() {
                       {req.book.author}
                     </td>
                     {userRole === "admin" && (
-                      <td className="py-4 px-6 text-gray-900 dark:text-white">
-                        {req.user.name}
-                      </td>
+                      <>
+                        <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                          {req.user.name}
+                        </td>
+                        <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
+                          {req.user.email}
+                        </td>
+                      </>
                     )}
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
