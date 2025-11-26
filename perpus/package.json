@@ -3,11 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -H 0.0.0.0 -p 5000",
-    "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 5000",
-    "lint": "next lint"
-  },
+    "dev": "next dev",
+    "start": "next start"    
+    },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -38,8 +36,8 @@
     "@eslint/eslintrc": "^3",
     "@prisma/client": "^6.19.0",
     "@types/node": "^20",
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
     "eslint": "^9",
     "eslint-config-next": "15.2.0",
     "postcss": "^8",
