@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+function generateRandomId(): string {
+  return Math.floor(10000000 + Math.random() * 90000000).toString();
+}
+
 export async function GET(req: NextRequest) {
   try {
     const books = await prisma.book.findMany({
@@ -27,6 +31,7 @@ export async function POST(req: NextRequest) {
         shelfId,
         stock,
         totalStock: stock,
+        displayBookId: generateRandomId(),
         image,
       },
       include: { category: true, shelf: true },

@@ -8,6 +8,7 @@ interface Book {
   title: string;
   author: string;
   image?: string;
+  displayBookId?: string;
 }
 
 interface BorrowRequest {
