@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, BookOpen, Users, BarChart3, Plus, LogOut, Settings, Home } from "lucide-react";
+import { Moon, Sun, BookOpen, Users, BarChart3, Plus, LogOut, Settings, Home, HelpCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -21,6 +21,7 @@ export default function Sidebar() {
     { icon: BookOpen, label: "Buku", path: "/dashboard/books" },
     { icon: Users, label: "Peminjam", path: "/dashboard/peminjam" },
     { icon: BookOpen, label: "Peminjaman", path: "/dashboard/borrow" },
+    { icon: HelpCircle, label: "Cara Meminjam", path: "/panduan/meminjam" },
     { icon: Settings, label: "Settings", path: "/dashboard/settings" },
   ];
 
@@ -28,6 +29,7 @@ export default function Sidebar() {
     { icon: Home, label: "Beranda", path: "/" },
     { icon: BookOpen, label: "Katalog Buku", path: "/dashboard/books" },
     { icon: BookOpen, label: "Peminjaman Saya", path: "/dashboard/borrow" },
+    { icon: HelpCircle, label: "Cara Meminjam", path: "/panduan/meminjam" },
   ];
 
   const menuItems = userRole === "admin" ? adminMenuItems : memberMenuItems;
