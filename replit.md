@@ -145,7 +145,21 @@ This endpoint creates:
 - 4 sample shelves (Rak A, Rak B, Rak C, Rak D)
 - 2 sample books for reference
 
-## Recent Changes (November 25, 2025)
+## Recent Changes (November 26, 2025)
+
+### Mobile Responsive Dashboard ✅
+- ✅ Added hamburger menu (☰) button on mobile devices (hidden on desktop)
+- ✅ Sidebar now slides in/out on mobile with overlay
+- ✅ Dashboard tables converted to card layout on mobile devices:
+  - `/dashboard/borrow` - Borrowing requests show as cards with all details
+  - `/dashboard/peminjam` - Borrower management shows as cards with action buttons stacked vertically
+  - Cards display: Request ID, Book title, Author, Status, User info, and action buttons
+  - Desktop view maintains full tables for better data visibility
+  - Mobile view optimized for single-column touch-friendly layout
+- ✅ Added responsive icon section on landing page with statistics (Users, Books, Visitors, Borrowings)
+- ✅ Updated footer with improved "Kontak Kami" section and social media icons
+
+### Previous Implementation (November 25, 2025)
 
 ### Simplified Borrowing UI Implementation ✅
 - ✅ Added "Ajukan Peminjaman" button directly on book cards

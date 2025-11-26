@@ -334,7 +334,7 @@ export default function BorrowPage() {
         </div>
       )}
 
-      {/* Requests Table */}
+      {/* Requests Table / Card View */}
       {filteredRequests.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
           <p className="text-gray-500 dark:text-gray-400">
@@ -344,9 +344,11 @@ export default function BorrowPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
@@ -425,8 +427,50 @@ export default function BorrowPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredRequests.map((req) => (
+              <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">ID: #{req.id}</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{req.book.title}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{req.book.author}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(req.status)}
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(req.status)}`}>
+                      {getStatusText(req.status)}
+                    </span>
+                  </div>
+                </div>
+                
+                {userRole === "admin" && (
+                  <>
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="font-semibold">Peminjam:</span> {req.user.name}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 break-all">
+                        <span className="font-semibold">Email:</span> {req.user.email}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(req.id)}
+                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center justify-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Hapus
+                    </button>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
