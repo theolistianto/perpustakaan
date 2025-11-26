@@ -133,6 +133,14 @@ This endpoint creates:
 
 ## Recent Changes (November 26, 2025)
 
+### Navbar & Borrow Table Visibility Fixes ✅
+- ✅ Navbar now displays on homepage (/)
+- ✅ Removed "Beranda" text from navbar menu
+- ✅ "Setting" menu only visible for admin users
+- ✅ Fixed table visibility on `/dashboard/borrow` for member/visitor - table persists across page navigation
+- ✅ Fixed fetch functions in borrow page to properly pass email parameter from localStorage
+- ✅ Added proper loading state management on borrow page
+
 ### Mobile Responsive Dashboard ✅
 - ✅ Added hamburger menu (☰) button on mobile devices (hidden on desktop)
 - ✅ Sidebar now slides in/out on mobile with overlay
