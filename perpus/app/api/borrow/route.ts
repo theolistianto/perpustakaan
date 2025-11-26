@@ -21,8 +21,7 @@ export async function POST(req: NextRequest) {
       data: {
         userId,
         bookId,
-        dueDate: dueDate ? new Date(dueDate) : sevenDaysLater,
-        status: "pending",
+dueDate: dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),        status: "pending",
       },
       include: {
         user: { select: { id: true, name: true } },
