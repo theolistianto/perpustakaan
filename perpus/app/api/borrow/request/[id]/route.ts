@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const requestId = parseInt(params.id);
+    const resolvedParams = await params;
+    const requestId = parseInt(resolvedParams.id);
 
     const borrow = await prisma.borrow.delete({
       where: { id: requestId },
@@ -15,9 +16,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const requestId = parseInt(params.id);
+    const resolvedParams = await params;
+    const requestId = parseInt(resolvedParams.id);
     const { status } = await req.json();
 
     const borrow = await prisma.borrow.update({

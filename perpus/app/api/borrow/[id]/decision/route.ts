@@ -4,10 +4,11 @@ import { prisma } from "@/lib/db";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const borrowId = parseInt(params.id);
+    const resolvedParams = await params;
+    const borrowId = parseInt(resolvedParams.id);
     const { accept } = await req.json(); // { accept: boolean }
 
     const borrow = await prisma.borrow.findUnique({ where: { id: borrowId } });
