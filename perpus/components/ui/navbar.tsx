@@ -32,9 +32,10 @@ export default function Navbar() {
 
   const menuItems = [
     { label: "Beranda", href: "/" },
-    { label: "Katalog", href: "/dashboard/books" },
+    { label: "Setting", href: "/dashboard/settings" },
     { label: "Tentang", href: "#about" },
     { label: "Buku", href: "#books" },
+    { label: "Cara Meminjam", href: "/panduan/meminjam" },
   ];
 
   return (
