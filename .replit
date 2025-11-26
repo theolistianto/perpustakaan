@@ -8,7 +8,7 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.shared]
-DATABASE_URL = "file:./dev.db"
+DATABASE_URL = "postgresql://neondb_owner:npg_GjPe6yNmfC2D@ep-delicate-pine-a1zfjgkv-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 JWT_SECRET = "replit-dev-secret-key-change-in-production"
 
 [workflows]
@@ -38,6 +38,10 @@ waitForPort = 5000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 37835
+externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
