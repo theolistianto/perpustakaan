@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
-    const bookId = parseInt(params.id);
+    const bookId = parseInt(context.params.id);
     const book = await prisma.book.findUnique({
       where: { id: bookId },
       include: { category: true, shelf: true },
