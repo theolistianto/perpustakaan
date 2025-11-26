@@ -424,7 +424,16 @@ export default function BorrowPage() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                    ID
+                    No. Urutan
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Nama User
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    User ID
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Book ID
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Judul Buku
@@ -438,9 +447,6 @@ export default function BorrowPage() {
                   {userRole === "admin" && (
                     <>
                       <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                        Peminjam
-                      </th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                         Email
                       </th>
                     </>
@@ -451,13 +457,25 @@ export default function BorrowPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredRequests.map((req) => (
+                {filteredRequests.map((req, index) => {
+                  const userBorrowCount = requests.filter(r => r.user.id === req.user.id).length;
+                  const userBorrowIndex = requests.filter(r => r.user.id === req.user.id).findIndex(r => r.id === req.id) + 1;
+                  return (
                   <tr
                     key={req.id}
                     className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
                   >
                     <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                      #{req.id}
+                      {userBorrowIndex}
+                    </td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                      {req.user.name}
+                    </td>
+                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
+                      {req.user.id}
+                    </td>
+                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
+                      {req.book.id}
                     </td>
                     <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
                       {req.book.title}
@@ -479,9 +497,6 @@ export default function BorrowPage() {
                     </td>
                     {userRole === "admin" && (
                       <>
-                        <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                          {req.user.name}
-                        </td>
                         <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
                           {req.user.email}
                         </td>
@@ -496,7 +511,8 @@ export default function BorrowPage() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
             </div>
@@ -504,12 +520,16 @@ export default function BorrowPage() {
 
           {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
-            {filteredRequests.map((req) => (
+            {filteredRequests.map((req) => {
+              const userBorrowIndex = requests.filter(r => r.user.id === req.user.id).findIndex(r => r.id === req.id) + 1;
+              return (
               <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-3">
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">ID: #{req.id}</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-1 truncate">{req.book.title}</p>
+                    <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">No. Urutan: {userBorrowIndex}</p>
+                    <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Nama User: {req.user.name}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">User ID: {req.user.id} | Book ID: {req.book.id}</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-2 truncate">{req.book.title}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{req.book.author}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
@@ -522,9 +542,6 @@ export default function BorrowPage() {
                 
                 {userRole === "admin" && (
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <span className="font-semibold">Peminjam:</span> {req.user.name}
-                    </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 break-all">
                       <span className="font-semibold">Email:</span> {req.user.email}
                     </p>
@@ -539,7 +556,8 @@ export default function BorrowPage() {
                   Hapus
                 </button>
               </div>
-            ))}
+            );
+            })}
           </div>
         </>
       )}
