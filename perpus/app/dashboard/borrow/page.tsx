@@ -204,7 +204,7 @@ export default function BorrowPage() {
   const getStatusText = (status: string) => {
     if (status === "pending") return "Menunggu";
     if (status === "approved") return "Silahkan ambil buku";
-    if (status === "rejected") return "Ditolak";
+    if (status === "rejected") return "Mohon maaf anda di tolak";
     return status;
   };
 

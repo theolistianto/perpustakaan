@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, Search, X, Trash2, Check } from "lucide-react";
+import { FileText, Search, X, Trash2, Check, XCircle } from "lucide-react";
 
 interface User {
   id: number;
@@ -86,6 +86,28 @@ export default function PeminjamPage() {
           )
         );
         alert("Permintaan disetujui!");
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    }
+  };
+
+  const handleReject = async (requestId: number) => {
+    try {
+      const res = await fetch(`/api/borrow/request/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected" }),
+      });
+
+      if (res.ok) {
+        // Update local state immediately to keep table visible
+        setRequests((prevRequests) =>
+          prevRequests.map((req) =>
+            req.id === requestId ? { ...req, status: "rejected" } : req
+          )
+        );
+        alert("Permintaan ditolak!");
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
@@ -274,13 +296,22 @@ export default function PeminjamPage() {
                     <td className="py-4 px-6">
                       <div className="flex gap-2">
                         {req.status === "pending" && (
-                          <button
-                            onClick={() => handleApprove(req.id)}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm flex items-center gap-2"
-                          >
-                            <Check className="w-4 h-4" />
-                            Terima
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleApprove(req.id)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium text-sm flex items-center gap-2"
+                            >
+                              <Check className="w-4 h-4" />
+                              Terima
+                            </button>
+                            <button
+                              onClick={() => handleReject(req.id)}
+                              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium text-sm flex items-center gap-2"
+                            >
+                              <XCircle className="w-4 h-4" />
+                              Tolak
+                            </button>
+                          </>
                         )}
                         <button
                           onClick={() => handleDelete(req.id)}
