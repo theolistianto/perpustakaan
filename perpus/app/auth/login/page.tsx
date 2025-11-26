@@ -32,7 +32,7 @@ export default function LoginPage() {
         localStorage.setItem("userName", data.name);
         localStorage.setItem("token", data.token);
         
-        router.push("/dashboard/books");
+        router.push("/");
       } else {
         const errorData = await res.json();
         setError(errorData.error || "Login gagal. Periksa username dan password Anda.");

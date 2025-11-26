@@ -8,12 +8,6 @@ import { BookOpen, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebo
 export default function LandingPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    const userRole = localStorage.getItem("userRole");
-    if (userRole) {
-      router.push("/dashboard/books");
-    }
-  }, [router]);
 
   return (
     <div>
