@@ -1,18 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Navbar from "@/components/ui/navbar";
-import { BookOpen, Lock, User, AlertCircle, Shield, ArrowRight, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebook, Twitter, Instagram } from "lucide-react";
-import Link from "next/link";
+import { BookOpen, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebook, Twitter, Instagram, ArrowRight } from "lucide-react";
 
-export default function HomePage() {
+export default function LandingPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("member");
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
@@ -21,184 +15,36 @@ export default function HomePage() {
     }
   }, [router]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("userRole", data.role);
-        localStorage.setItem("userEmail", data.email);
-        localStorage.setItem("userName", data.name);
-        localStorage.setItem("token", data.token);
-        
-        router.push("/dashboard/books");
-      } else {
-        const errorData = await res.json();
-        setError(errorData.error || "Login gagal!");
-      }
-    } catch (err) {
-      setError("Terjadi kesalahan!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div>
       <Navbar />
       
-      <section className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Login Form */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8">
-              <div className="text-center mb-8">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                    <BookOpen className="w-7 h-7 text-white" />
-                  </div>
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Perpus System
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Masuk atau Daftar
-                </p>
+      <section className="h-96 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
+          <h1 className="text-5xl font-bold text-white mb-4">Perpus System</h1>
+          <p className="text-xl text-white/90 mb-8">Sistem Manajemen Perpustakaan Modern</p>
+          
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const query = (e.target as HTMLFormElement).querySelector('input')?.value;
+            if (query?.trim()) {
+              router.push("/dashboard/books?search=" + encodeURIComponent(query));
+            }
+          }} className="max-w-2xl">
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Cari buku..."
+                  className="w-full pl-12 pr-4 py-3 rounded-lg"
+                />
               </div>
-
-              <form onSubmit={handleLogin} className="space-y-4">
-                {/* Role Selection */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                    Tipe Login
-                  </label>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setRole("member")}
-                      className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
-                        role === "member"
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      Pengunjung
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRole("admin")}
-                      className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
-                        role === "admin"
-                          ? "bg-purple-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      Admin
-                    </button>
-                  </div>
-                </div>
-
-                {/* Username */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                    Username
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Username Anda"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password Anda"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-start gap-2">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {/* Login Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-white font-semibold rounded-lg transition"
-                >
-                  {loading ? "Sedang login..." : "Masuk"}
-                </button>
-
-                {/* Back to Signup */}
-                <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Link href="/auth/signup" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                    Belum punya akun? Daftar di sini
-                  </Link>
-                </div>
-              </form>
+              <button type="submit" className="px-8 py-3 bg-pink-600 text-white rounded-lg font-semibold">
+                Cari
+              </button>
             </div>
-
-            {/* Signup Info */}
-            <div className="space-y-4">
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-white">
-                <h2 className="text-2xl font-bold mb-4">Pendaftaran Baru</h2>
-                <p className="text-white/80 mb-6">
-                  Buat akun pengunjung untuk mulai meminjam buku dari perpustakaan kami.
-                </p>
-                <Link
-                  href="/auth/signup"
-                  className="w-full block text-center py-3 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold rounded-lg transition"
-                >
-                  Daftar Sekarang
-                </Link>
-
-                <div className="mt-8 space-y-4">
-                  <h3 className="text-lg font-semibold">Akun Demo</h3>
-                  <div className="bg-white/10 rounded-lg p-4">
-                    <p className="font-semibold mb-2">👤 Pengunjung</p>
-                    <p className="text-sm text-white/80">Username: visitor</p>
-                    <p className="text-sm text-white/80">Password: visitor123</p>
-                  </div>
-                  <div className="bg-white/10 rounded-lg p-4">
-                    <p className="font-semibold mb-2">👨‍💼 Admin</p>
-                    <p className="text-sm text-white/80">Username: admin</p>
-                    <p className="text-sm text-white/80">Password: admin123</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
       </section>
 

@@ -90,12 +90,12 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <button
-              onClick={() => router.push("/auth/login")}
+            <Link
+              href="/auth/login"
               className="hidden md:block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
             >
-              Login
-            </button>
+              Masuk
+            </Link>
           )}
 
           {/* Mobile Menu Button */}
@@ -141,15 +141,13 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <button
-                onClick={() => {
-                  router.push("/auth/login");
-                  setIsOpen(false);
-                }}
-                className="w-full mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+              <Link
+                href="/auth/login"
+                onClick={() => setIsOpen(false)}
+                className="w-full mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition block text-center"
               >
-                Login
-              </button>
+                Masuk
+              </Link>
             )}
           </div>
         )}
