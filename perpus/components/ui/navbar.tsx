@@ -34,7 +34,7 @@ export default function Navbar() {
     { label: "Beranda", href: "/" },
     { label: "Katalog", href: "/dashboard/books" },
     { label: "Tentang", href: "#about" },
-    { label: "Fasilitas", href: "#features" },
+    { label: "Buku", href: "#books" },
   ];
 
   return (
