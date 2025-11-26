@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/ui/navbar";
-import { BookOpen, Lock, User, AlertCircle, Shield } from "lucide-react";
+import { BookOpen, Lock, User, AlertCircle, Shield, ArrowRight, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebook, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
