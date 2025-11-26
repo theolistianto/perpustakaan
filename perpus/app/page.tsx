@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Search, BookOpen, Users, ArrowRight, Mail, MapPin, Phone, Facebook, Twitter, Instagram } from "lucide-react";
+import { Search, BookOpen, Users, ArrowRight, Mail, MapPin, Phone, Facebook, Twitter, Instagram, Users2, Eye, Gift } from "lucide-react";
 import { useState } from "react";
 import Navbar from "@/components/ui/navbar";
 
@@ -87,18 +87,22 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
+              <Users2 className="w-12 h-12 text-pink-600 mx-auto mb-3" />
               <p className="text-4xl font-bold text-pink-600">1.271</p>
               <p className="text-gray-600 mt-2">Anggota Perpustakaan</p>
             </div>
             <div className="text-center">
+              <BookOpen className="w-12 h-12 text-pink-600 mx-auto mb-3" />
               <p className="text-4xl font-bold text-pink-600">15.052+</p>
               <p className="text-gray-600 mt-2">Koleksi Buku</p>
             </div>
             <div className="text-center">
+              <Eye className="w-12 h-12 text-pink-600 mx-auto mb-3" />
               <p className="text-4xl font-bold text-pink-600">137+</p>
               <p className="text-gray-600 mt-2">Pengunjung</p>
             </div>
             <div className="text-center">
+              <Gift className="w-12 h-12 text-pink-600 mx-auto mb-3" />
               <p className="text-4xl font-bold text-pink-600">14.978+</p>
               <p className="text-gray-600 mt-2">Peminjaman</p>
             </div>
