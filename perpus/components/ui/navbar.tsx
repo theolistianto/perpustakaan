@@ -34,9 +34,8 @@ export default function Navbar() {
     window.location.reload();
   };
 
-  const menuItems = [
-    { label: "Beranda", href: "/" },
-    { label: "Setting", href: "/dashboard/settings" },
+    const menuItems = [
+    ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : []),
     { label: "Tentang", href: "#about" },
     { label: "Buku", href: "#books" },
     { label: "Cara Meminjam", href: "/panduan/meminjam" },
