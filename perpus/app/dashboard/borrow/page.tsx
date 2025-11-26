@@ -49,11 +49,12 @@ export default function BorrowPage() {
     setUserRole(role);
     setUserEmail(email);
 
+    setLoading(true);
     if (role === "admin") {
-      fetchAllRequests();
+      fetchAllRequests(email);
       fetchBooks();
     } else {
-      fetchUserRequests();
+      fetchUserRequests(email);
       fetchBooks();
     }
   }, []);
@@ -70,11 +71,11 @@ export default function BorrowPage() {
     }
   };
 
-  const fetchAllRequests = async () => {
+  const fetchAllRequests = async (email?: string | null) => {
     try {
       // Fetch from an endpoint that returns ALL requests, not just pending
       const res = await fetch("/api/borrow/all-requests?status=all", {
-        headers: { "x-user-email": userEmail || "" },
+        headers: { "x-user-email": email || userEmail || "" },
       });
       if (res.ok) {
         const data = await res.json();
@@ -82,7 +83,7 @@ export default function BorrowPage() {
       } else {
         // Fallback: fetch from user-requests if admin endpoint doesn't support all
         const fallbackRes = await fetch("/api/borrow/all-requests", {
-          headers: { "x-user-email": userEmail || "" },
+          headers: { "x-user-email": email || userEmail || "" },
         });
         if (fallbackRes.ok) {
           const data = await fallbackRes.json();
@@ -96,10 +97,10 @@ export default function BorrowPage() {
     }
   };
 
-  const fetchUserRequests = async () => {
+  const fetchUserRequests = async (email?: string | null) => {
     try {
       const res = await fetch(`/api/borrow/user-requests`, {
-        headers: { "x-user-email": userEmail || "" },
+        headers: { "x-user-email": email || userEmail || "" },
       });
       if (res.ok) {
         const data = await res.json();
