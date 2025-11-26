@@ -461,59 +461,58 @@ export default function BorrowPage() {
               </thead>
               <tbody>
                 {filteredRequests.map((req, index) => {
-                  const userBorrowCount = requests.filter(r => r.user.id === req.user.id).length;
                   const userBorrowIndex = requests.filter(r => r.user.id === req.user.id).findIndex(r => r.id === req.id) + 1;
                   return (
-                  <tr
-                    key={req.id}
-                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
-                  >
-                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                      {userBorrowIndex}
-                    </td>
-                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                      {req.user.username}
-                    </td>
-                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
-                      {req.user.displayUserId}
-                    </td>
-                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
-                      {req.book.displayBookId}
-                    </td>
-                    <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                      {req.book.title}
-                    </td>
-                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
-                      {req.book.author}
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(req.status)}
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                            req.status
-                          )}`}
+                    <tr
+                      key={req.id}
+                      className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                    >
+                      <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                        {userBorrowIndex}
+                      </td>
+                      <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                        {req.user.username}
+                      </td>
+                      <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
+                        {req.user.displayUserId}
+                      </td>
+                      <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
+                        {req.book.displayBookId}
+                      </td>
+                      <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
+                        {req.book.title}
+                      </td>
+                      <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
+                        {req.book.author}
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(req.status)}
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                              req.status
+                            )}`}
+                          >
+                            {getStatusText(req.status)}
+                          </span>
+                        </div>
+                      </td>
+                      {userRole === "admin" && (
+                        <>
+                          <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
+                            {req.user.email}
+                          </td>
+                        </>
+                      )}
+                      <td className="py-4 px-6">
+                        <button
+                          onClick={() => handleDelete(req.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
                         >
-                          {getStatusText(req.status)}
-                        </span>
-                      </div>
-                    </td>
-                    {userRole === "admin" && (
-                      <>
-                        <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
-                          {req.user.email}
-                        </td>
-                      </>
-                    )}
-                    <td className="py-4 px-6">
-                      <button
-                        onClick={() => handleDelete(req.id)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
-                      >
-                        Hapus
-                      </button>
-                    </td>
-                  </tr>
+                          Hapus
+                        </button>
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>
