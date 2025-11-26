@@ -14,11 +14,14 @@ export async function POST(req: NextRequest) {
       );
 
     // create pending borrow request (admin will accept/reject)
+    const sevenDaysLater = new Date();
+    sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
+
     const borrow = await prisma.borrow.create({
       data: {
         userId,
         bookId,
-        dueDate: dueDate ? new Date(dueDate) : undefined,
+        dueDate: dueDate ? new Date(dueDate) : sevenDaysLater,
         status: "pending",
       },
       include: {
