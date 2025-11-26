@@ -183,7 +183,7 @@ export default function LoginPage() {
 
               {/* Back to Signup */}
               <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
+                <Link href="/auth/signup" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
                   Belum punya akun? Daftar di sini
                 </Link>
               </div>
