@@ -224,70 +224,87 @@ export default function BorrowPage() {
         </h1>
       </div>
 
-      {/* Search and Filter - Admin Only */}
-      {userRole === "admin" && (
+      {/* Search and Filter - Both Admin and Member */}
+      {(userRole === "admin" || userRole !== "admin") && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Cari buku..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            {userRole === "admin" ? (
+              <>
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Cari buku..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
 
-              {searchResults.length > 0 && !selectedBook && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
-                  <div className="max-h-64 overflow-y-auto">
-                    {searchResults.map((book) => (
-                      <button
-                        key={book.id}
-                        onClick={() => {
-                          setSelectedBook(book);
-                          setSearchResults([]);
-                        }}
-                        className="w-full text-left px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-start gap-3"
-                      >
-                        <div className="bg-gray-100 dark:bg-gray-700 rounded p-2 flex-shrink-0">
-                          {book.image ? (
-                            <img
-                              src={book.image}
-                              alt={book.title}
-                              className="w-12 h-16 object-cover rounded"
-                            />
-                          ) : (
-                            <BookOpen className="w-12 h-16 text-gray-400" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-gray-900 dark:text-white truncate">
-                            {book.title}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                            {book.author}
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  {searchResults.length > 0 && !selectedBook && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
+                      <div className="max-h-64 overflow-y-auto">
+                        {searchResults.map((book) => (
+                          <button
+                            key={book.id}
+                            onClick={() => {
+                              setSelectedBook(book);
+                              setSearchResults([]);
+                            }}
+                            className="w-full text-left px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-start gap-3"
+                          >
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded p-2 flex-shrink-0">
+                              {book.image ? (
+                                <img
+                                  src={book.image}
+                                  alt={book.title}
+                                  className="w-12 h-16 object-cover rounded"
+                                />
+                              ) : (
+                                <BookOpen className="w-12 h-16 text-gray-400" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                {book.title}
+                              </p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                                {book.author}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Semua Status</option>
-              <option value="pending">Menunggu</option>
-              <option value="approved">Disetujui</option>
-              <option value="rejected">Ditolak</option>
-            </select>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="pending">Menunggu</option>
+                  <option value="approved">Disetujui</option>
+                  <option value="rejected">Ditolak</option>
+                </select>
+              </>
+            ) : (
+              <div className="flex-1">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="pending">Menunggu</option>
+                  <option value="approved">Disetujui</option>
+                  <option value="rejected">Ditolak</option>
+                </select>
+              </div>
+            )}
           </div>
 
-          {selectedBook && (
+          {userRole === "admin" && selectedBook && (
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -360,6 +377,9 @@ export default function BorrowPage() {
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Pengarang
                   </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Status
+                  </th>
                   {userRole === "admin" && (
                     <>
                       <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
@@ -368,14 +388,11 @@ export default function BorrowPage() {
                       <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                         Email
                       </th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                        Status
-                      </th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                        Aksi
-                      </th>
                     </>
                   )}
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -393,6 +410,18 @@ export default function BorrowPage() {
                     <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
                       {req.book.author}
                     </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(req.status)}
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                            req.status
+                          )}`}
+                        >
+                          {getStatusText(req.status)}
+                        </span>
+                      </div>
+                    </td>
                     {userRole === "admin" && (
                       <>
                         <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
@@ -401,28 +430,16 @@ export default function BorrowPage() {
                         <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
                           {req.user.email}
                         </td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-2">
-                            {getStatusIcon(req.status)}
-                            <span
-                              className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                                req.status
-                              )}`}
-                            >
-                              {getStatusText(req.status)}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <button
-                            onClick={() => handleDelete(req.id)}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
-                          >
-                            Hapus
-                          </button>
-                        </td>
                       </>
                     )}
+                    <td className="py-4 px-6">
+                      <button
+                        onClick={() => handleDelete(req.id)}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
+                      >
+                        Hapus
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -434,39 +451,38 @@ export default function BorrowPage() {
           <div className="md:hidden space-y-4">
             {filteredRequests.map((req) => (
               <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">ID: #{req.id}</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{req.book.title}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{req.book.author}</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-1 truncate">{req.book.title}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{req.book.author}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {getStatusIcon(req.status)}
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(req.status)}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusColor(req.status)}`}>
                       {getStatusText(req.status)}
                     </span>
                   </div>
                 </div>
                 
                 {userRole === "admin" && (
-                  <>
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        <span className="font-semibold">Peminjam:</span> {req.user.name}
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 break-all">
-                        <span className="font-semibold">Email:</span> {req.user.email}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleDelete(req.id)}
-                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center justify-center gap-2"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Hapus
-                    </button>
-                  </>
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="font-semibold">Peminjam:</span> {req.user.name}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 break-all">
+                      <span className="font-semibold">Email:</span> {req.user.email}
+                    </p>
+                  </div>
                 )}
+                
+                <button
+                  onClick={() => handleDelete(req.id)}
+                  className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Hapus
+                </button>
               </div>
             ))}
           </div>
