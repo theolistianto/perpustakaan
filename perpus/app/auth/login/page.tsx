@@ -6,7 +6,7 @@ import { User, Lock, Shield, BookOpen, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("member");
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ username, password, role }),
       });
 
       if (res.ok) {
@@ -32,10 +32,10 @@ export default function LoginPage() {
         localStorage.setItem("userName", data.name);
         localStorage.setItem("token", data.token);
         
-        router.push("/");
+        router.push("/dashboard/books");
       } else {
         const errorData = await res.json();
-        setError(errorData.error || "Login gagal. Periksa email dan password Anda.");
+        setError(errorData.error || "Login gagal. Periksa username dan password Anda.");
       }
     } catch (err) {
       setError("Terjadi kesalahan. Silakan coba lagi.");
@@ -47,20 +47,20 @@ export default function LoginPage() {
   const demoAccounts = [
     {
       role: "member",
-      email: "visitor@perpus.id",
+      username: "visitor",
       password: "visitor123",
       description: "Akun Pengunjung - Akses terbatas ke katalog buku",
     },
     {
       role: "admin",
-      email: "admin@perpus.id",
+      username: "admin",
       password: "admin123",
       description: "Akun Admin - Akses penuh ke semua fitur",
     },
   ];
 
-  const quickLogin = (email: string, password: string, selectedRole: string) => {
-    setEmail(email);
+  const quickLogin = (username: string, password: string, selectedRole: string) => {
+    setUsername(username);
     setPassword(password);
     setRole(selectedRole);
   };
@@ -117,18 +117,18 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Email */}
+              {/* Username */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                  Email
+                  Username
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email Anda"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username Anda"
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                     required
                   />
@@ -180,10 +180,10 @@ export default function LoginPage() {
                 )}
               </button>
 
-              {/* Back to Home */}
+              {/* Back to Signup */}
               <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
                 <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                  Kembali ke Halaman Utama
+                  Belum punya akun? Daftar di sini
                 </Link>
               </div>
             </form>
@@ -202,7 +202,7 @@ export default function LoginPage() {
                   <div
                     key={idx}
                     className="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition cursor-pointer"
-                    onClick={() => quickLogin(account.email, account.password, account.role)}
+                    onClick={() => quickLogin(account.username, account.password, account.role)}
                   >
                     <div className="flex items-start gap-3 mb-2">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
@@ -220,7 +220,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="bg-white/10 rounded p-2 text-sm font-mono">
-                      <p>Email: {account.email}</p>
+                      <p>Username: {account.username}</p>
                       <p>Password: {account.password}</p>
                     </div>
                   </div>

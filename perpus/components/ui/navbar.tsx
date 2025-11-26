@@ -26,7 +26,7 @@ export default function Navbar() {
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("token");
-    router.push("/");
+    router.push("/auth/signup");
     window.location.reload();
   };
 

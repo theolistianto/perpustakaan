@@ -8,17 +8,17 @@ function generateRandomId(): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, role } = await req.json();
+    const { username, password, role } = await req.json();
 
-    // Try to find existing user
-    let user = await prisma.user.findUnique({ where: { email } });
+    // Try to find existing user by username
+    let user = await prisma.user.findUnique({ where: { username } });
 
     // If user doesn't exist, create demo accounts
     if (!user) {
-      if (email === "admin@perpus.id" && password === "admin123" && role === "admin") {
+      if (username === "admin" && password === "admin123" && role === "admin") {
         user = await prisma.user.create({
           data: {
-            email,
+            email: "admin@perpus.id",
             password: hashPassword(password),
             role: "admin",
             name: "Administrator",
@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
             displayUserId: generateRandomId(),
           },
         });
-      } else if (email === "visitor@perpus.id" && password === "visitor123" && role === "member") {
+      } else if (username === "visitor" && password === "visitor123" && role === "member") {
         user = await prisma.user.create({
           data: {
-            email,
+            email: "visitor@perpus.id",
             password: hashPassword(password),
             role: "member",
             name: "Pengunjung",
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         });
       } else {
         return NextResponse.json(
-          { error: "Email atau password salah" },
+          { error: "Username atau password salah" },
           { status: 401 }
         );
       }
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       // Verify existing user
       if (!comparePassword(password, user.password) || user.role !== role) {
         return NextResponse.json(
-          { error: "Email atau password salah" },
+          { error: "Username atau password salah" },
           { status: 401 }
         );
       }
