@@ -10,20 +10,24 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userUsername, setUserUsername] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     const name = localStorage.getItem("userName");
+    const username = localStorage.getItem("userUsername");
     const email = localStorage.getItem("userEmail");
     setUserRole(role);
     setUserName(name);
+    setUserUsername(username);
     setUserEmail(email);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
     localStorage.removeItem("userName");
+    localStorage.removeItem("userUsername");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("token");
     router.push("/auth/signup");
@@ -70,14 +74,14 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-4">
               <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  {userName?.charAt(0).toUpperCase() || "U"}
+                  {userUsername?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {userName || "User"}
+                    {userUsername || "User"}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {userRole === "admin" ? "👨‍💼 Admin" : "👤 Pengunjung"}
+                    {userRole === "admin" ? "Admin" : "Pengunjung"}
                   </p>
                 </div>
               </div>
@@ -123,10 +127,10 @@ export default function Navbar() {
               <>
                 <div className="px-4 py-2 text-sm">
                   <p className="font-semibold text-gray-900 dark:text-white">
-                    {userName || "User"}
+                    {userUsername || "User"}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {userRole === "admin" ? "👨‍💼 Admin" : "👤 Pengunjung"}
+                    {userRole === "admin" ? "Admin" : "Pengunjung"}
                   </p>
                 </div>
                 <button
