@@ -3,13 +3,13 @@
 ## Overview
 Perpus is a Next.js-based library management system that allows administrators to manage books, members, and borrowing transactions. The application includes features for book cataloging, member management, borrowing requests, and return tracking.
 
-**Note:** This application currently uses SQLite for development convenience. For production deployment on Replit (especially autoscale), you should migrate to a persistent external database like PostgreSQL, MySQL, or a managed database service to ensure data persists across deployments and instances.
+**Database:** Connected to Neon PostgreSQL for persistent data storage across deployments.
 
 ## Project Structure
 - **Framework**: Next.js 15.2.0 with App Router
 - **Language**: TypeScript
 - **UI**: React 19 with Tailwind CSS
-- **Database**: SQLite (via Prisma ORM)
+- **Database**: PostgreSQL via Neon (via Prisma ORM)
 - **Authentication**: JWT-based authentication with bcrypt password hashing
 - **UI Components**: Radix UI primitives, custom components in `/components`
 
@@ -39,30 +39,16 @@ You can view/modify these in the Replit Secrets tab.
 
 ### Development Setup
 1. Dependencies are installed via npm
-2. Database migrations are managed via Prisma (SQLite-specific migrations generated)
+2. Database migrations are managed via Prisma (PostgreSQL migrations)
 3. Server runs on port 5000 bound to 0.0.0.0 for Replit compatibility
 4. Next.js configured with allowed origins for Replit proxy
-5. SQLite database file (dev.db) is excluded from future commits via .gitignore
+5. Connected to Neon PostgreSQL database for persistent data storage
 
-**Note:** If the SQLite database file is currently tracked in git (from initial setup), you can remove it from version control by running:
-```bash
-cd perpus && git rm -f prisma/dev.db prisma/dev.db-journal
-git commit -m "Remove SQLite database from version control"
-```
-This is optional but recommended to keep your repository clean.
-
-### Production Deployment Considerations
-**Important:** The current SQLite setup is suitable for development but NOT for production autoscale deployments on Replit because:
-- SQLite databases are stored locally and will be reset/lost when instances restart or scale
-- Each autoscale instance would have its own separate database, causing data inconsistency
-- Data will not persist across deployments
-
-**For production, you should:**
-1. Set up an external PostgreSQL database (Replit offers managed PostgreSQL via the Database pane)
-2. Update `perpus/prisma/schema.prisma` to use `provider = "postgresql"`
-3. Update the `DATABASE_URL` environment variable to point to your PostgreSQL connection string
-4. Run `npx prisma migrate dev` to regenerate migrations for PostgreSQL
-5. The startup scripts will automatically apply migrations on deployment
+### Database Configuration
+- **Provider**: PostgreSQL (via Neon)
+- **Environment Variable**: `DATABASE_URL` contains the PostgreSQL connection string
+- **Migrations**: Stored in `prisma/migrations/` directory
+- **Automatic Migration**: Startup script runs `prisma migrate deploy` to ensure schema is up-to-date
 
 ## Database Schema
 - **User**: Stores user credentials and roles
