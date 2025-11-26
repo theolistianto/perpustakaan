@@ -2,12 +2,33 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Library, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Library, Menu, X, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    const name = localStorage.getItem("userName");
+    const email = localStorage.getItem("userEmail");
+    setUserRole(role);
+    setUserName(name);
+    setUserEmail(email);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("token");
+    router.push("/");
+    window.location.reload();
+  };
 
   const menuItems = [
     { label: "Beranda", href: "/" },
@@ -43,13 +64,38 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Login Button */}
-          <button
-            onClick={() => router.push("/auth/login")}
-            className="hidden md:block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
-          >
-            Login
-          </button>
+          {/* Login/Logout Section */}
+          {userRole ? (
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  {userName?.charAt(0).toUpperCase() || "U"}
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {userName || "User"}
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {userRole === "admin" ? "👨‍💼 Admin" : "👤 Pengunjung"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => router.push("/auth/login")}
+              className="hidden md:block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+            >
+              Login
+            </button>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -72,15 +118,38 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <button
-              onClick={() => {
-                router.push("/auth/login");
-                setIsOpen(false);
-              }}
-              className="w-full mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
-            >
-              Login
-            </button>
+            {userRole ? (
+              <>
+                <div className="px-4 py-2 text-sm">
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {userName || "User"}
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {userRole === "admin" ? "👨‍💼 Admin" : "👤 Pengunjung"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  router.push("/auth/login");
+                  setIsOpen(false);
+                }}
+                className="w-full mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+              >
+                Login
+              </button>
+            )}
           </div>
         )}
       </div>

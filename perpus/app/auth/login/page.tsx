@@ -29,13 +29,10 @@ export default function LoginPage() {
         const data = await res.json();
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("userEmail", data.email);
+        localStorage.setItem("userName", data.name);
         localStorage.setItem("token", data.token);
         
-        if (data.role === "admin") {
-          router.push("/dashboard/dashboard");
-        } else {
-          router.push("/dashboard/books");
-        }
+        router.push("/");
       } else {
         const errorData = await res.json();
         setError(errorData.error || "Login gagal. Periksa email dan password Anda.");
