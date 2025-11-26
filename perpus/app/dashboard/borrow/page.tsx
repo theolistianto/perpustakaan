@@ -166,12 +166,19 @@ export default function BorrowPage() {
       filtered = filtered.filter((r) => r.book.id === selectedBook.id);
     }
 
+    if (searchTerm.trim() && userRole !== "admin") {
+      filtered = filtered.filter((r) =>
+        r.book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.book.author.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
     if (statusFilter !== "all") {
       filtered = filtered.filter((r) => r.status === statusFilter);
     }
 
     setFilteredRequests(filtered);
-  }, [statusFilter, selectedBook, requests]);
+  }, [statusFilter, selectedBook, requests, searchTerm, userRole]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -289,18 +296,28 @@ export default function BorrowPage() {
                 </select>
               </>
             ) : (
-              <div className="flex-1">
+              <>
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Cari buku..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">Semua Status</option>
                   <option value="pending">Menunggu</option>
                   <option value="approved">Disetujui</option>
                   <option value="rejected">Ditolak</option>
                 </select>
-              </div>
+              </>
             )}
           </div>
 
