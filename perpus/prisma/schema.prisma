@@ -8,12 +8,14 @@ generator client {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String
-  role     String   // "member" or "admin"
-  name     String
-  borrows  Borrow[]
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  role          String   // "member" or "admin"
+  name          String
+  username      String   @unique
+  displayUserId String   @unique // 8-digit random display ID
+  borrows       Borrow[]
 }
 
 model Category {
@@ -29,17 +31,18 @@ model Shelf {
 }
 
 model Book {
-  id          Int      @id @default(autoincrement())
-  title       String
-  author      String
-  categoryId  Int
-  shelfId     Int
-  stock       Int      @default(0)
-  totalStock  Int      @default(0)
-  image       String?
-  category    Category @relation(fields: [categoryId], references: [id])
-  shelf       Shelf    @relation(fields: [shelfId], references: [id])
-  borrows     Borrow[]
+  id            Int      @id @default(autoincrement())
+  title         String
+  author        String
+  categoryId    Int
+  shelfId       Int
+  stock         Int      @default(0)
+  totalStock    Int      @default(0)
+  displayBookId String   @unique // 8-digit random display ID
+  image         String?
+  category      Category @relation(fields: [categoryId], references: [id])
+  shelf         Shelf    @relation(fields: [shelfId], references: [id])
+  borrows       Borrow[]
 }
 
 model Borrow {

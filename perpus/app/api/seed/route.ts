@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+function generateRandomId(): string {
+  return Math.floor(10000000 + Math.random() * 90000000).toString();
+}
+
 export async function GET() {
   try {
     // Create categories
@@ -34,6 +38,7 @@ export async function GET() {
           shelfId: 1,
           stock: 5,
           totalStock: 5,
+          displayBookId: generateRandomId(),
           image: null,
         },
         {
@@ -43,6 +48,7 @@ export async function GET() {
           shelfId: 2,
           stock: 3,
           totalStock: 3,
+          displayBookId: generateRandomId(),
           image: null,
         },
       ],

@@ -18,11 +18,14 @@ interface BorrowRequest {
     id: number;
     title: string;
     author: string;
+    displayBookId: string;
   };
   user: {
     id: number;
     name: string;
     email: string;
+    username: string;
+    displayUserId: string;
   };
 }
 
@@ -433,7 +436,7 @@ export default function BorrowPage() {
                     User ID
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
-                    Book ID
+                    Book ID (Display)
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Judul Buku
@@ -469,13 +472,13 @@ export default function BorrowPage() {
                       {userBorrowIndex}
                     </td>
                     <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                      {req.user.name}
+                      {req.user.username}
                     </td>
                     <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
-                      {req.user.id}
+                      {req.user.displayUserId}
                     </td>
                     <td className="py-4 px-6 text-gray-600 dark:text-gray-400 font-medium">
-                      {req.book.id}
+                      {req.book.displayBookId}
                     </td>
                     <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
                       {req.book.title}
@@ -527,8 +530,8 @@ export default function BorrowPage() {
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">No. Urutan: {userBorrowIndex}</p>
-                    <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Nama User: {req.user.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">User ID: {req.user.id} | Book ID: {req.book.id}</p>
+                    <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Nama User: {req.user.username}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">User ID: {req.user.displayUserId} | Book ID: {req.book.displayBookId}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white mt-2 truncate">{req.book.title}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{req.book.author}</p>
                   </div>
