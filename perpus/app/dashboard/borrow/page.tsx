@@ -309,9 +309,8 @@ export default function BorrowPage() {
 
       {/* Show requests table only when in requests tab (or admin view) */}
       {(activeTab === "requests" || userRole === "admin") && (
-      <>
-      {/* Search and Filter - Both Admin and Member */}
-      {(userRole === "admin" || userRole !== "admin") && (
+        <div className="space-y-6">
+        {/* Search and Filter */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {userRole === "admin" ? (
@@ -482,10 +481,9 @@ export default function BorrowPage() {
             </div>
           )}
         </div>
-      )}
 
-      {/* Requests Table / Card View */}
-      {filteredRequests.length === 0 ? (
+        {/* Requests Table / Card View */}
+        {filteredRequests.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
           <p className="text-gray-500 dark:text-gray-400">
             {requests.length === 0
@@ -638,7 +636,7 @@ export default function BorrowPage() {
           </div>
         </>
       )}
-      </>
+        </div>
       )}
 
       {/* Borrowing History Tab */}
