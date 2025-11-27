@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { Library, Menu, X, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export default function Navbar() {
+interface NavbarProps {
+  onMenuClick?: () => void;
+}
+
+export default function Navbar({ onMenuClick }: NavbarProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -34,6 +38,11 @@ export default function Navbar() {
     window.location.reload();
   };
 
+  const handleMenuClick = () => {
+    if (onMenuClick) onMenuClick();
+    else setIsOpen(!isOpen);
+  };
+
   const menuItems = [
     { label: "E-Catalog", href: "/e-catalog" },
     ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : [
@@ -45,9 +54,17 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Hamburger Menu - Desktop */}
+          <button
+            onClick={handleMenuClick}
+            className="hidden lg:block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white">
@@ -106,8 +123,8 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-700 dark:text-gray-300"
+            onClick={handleMenuClick}
+            className="lg:hidden text-gray-700 dark:text-gray-300"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

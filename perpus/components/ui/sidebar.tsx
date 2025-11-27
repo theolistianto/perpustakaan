@@ -1,5 +1,5 @@
 "use client";
-import { BookOpen, LogOut, Settings, Home, HelpCircle, Menu, X, BarChart3, Users } from "lucide-react";
+import { BookOpen, LogOut, Settings, Home, HelpCircle, X, BarChart3, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -70,63 +70,71 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-blue-600">Perpustakaan</h2>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-            {userRole === "admin" ? "👨‍💼 Admin" : "👤 Pengunjung"}
-          </p>
+        {/* Header */}
+        <div className="p-6 border-b border-gray-800 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <span className="font-bold">
+              Perpus<span className="text-blue-400">System</span>
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="lg:hidden text-gray-400 hover:text-white"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
 
-        {/* Menu Navigation */}
-        <nav className="space-y-2 flex-1">
-          {menuItems.map((item) => (
-            <Button
-              key={item.path}
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => {
-                router.push(item.path);
-                setIsOpen(false);
-              }}
-            >
-              <item.icon className="mr-2" />
-              {item.label}
-            </Button>
-          ))}
+        {/* User Info */}
+        {userRole && (
+          <div className="p-6 border-b border-gray-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center font-semibold">
+                {userUsername?.charAt(0).toUpperCase() || "U"}
+              </div>
+              <div>
+                <p className="font-semibold text-sm">{userUsername || "User"}</p>
+                <p className="text-xs text-gray-400">
+                  {userRole === "admin" ? "Admin" : "Pengunjung"}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Menu Items */}
+        <nav className="p-6 space-y-2 flex-1 overflow-y-auto">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.path}
+                onClick={() => handleNavigate(item.path)}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="text-left">{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-4">
-          <Button
-            variant="ghost"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="w-full justify-start"
-          >
-            {theme === "dark" ? (
-              <Sun className="mr-2 w-4 h-4" />
-            ) : (
-              <Moon className="mr-2 w-4 h-4" />
-            )}
-            <span className="text-sm">Theme</span>
-          </Button>
-
-          <Button
-            onClick={handleLogout}
-            className="w-full justify-start bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/30"
-          >
-            <LogOut className="mr-2 w-4 h-4" />
-            <span className="text-sm">Logout</span>
-          </Button>
-        </div>
+        {/* Logout Button */}
+        {userRole && (
+          <div className="p-6 border-t border-gray-800">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 md:hidden z-30"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
     </>
   );
 }
