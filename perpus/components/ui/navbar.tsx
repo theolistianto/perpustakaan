@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Library, LogOut, Menu, X } from "lucide-react";
+import { Library, LogOut, Menu, X, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -11,6 +11,7 @@ export default function Navbar() {
   const [userName, setUserName] = useState<string | null>(null);
   const [userUsername, setUserUsername] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -21,7 +22,24 @@ export default function Navbar() {
     setUserName(name);
     setUserUsername(username);
     setUserEmail(email);
+
+    // Check dark mode from document
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    setIsDark(isDarkMode);
   }, []);
+
+  const toggleDarkMode = () => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    if (isDarkMode) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDark(true);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
@@ -74,6 +92,16 @@ export default function Navbar() {
           {/* Login/Logout Section */}
           {userRole ? (
             <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5 text-yellow-600" />
+                ) : (
+                  <Moon className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
               <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                   {userUsername?.charAt(0).toUpperCase() || "U"}
@@ -96,12 +124,24 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <Link
-              href="/auth/login"
-              className="hidden md:block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
-            >
-              Masuk
-            </Link>
+            <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5 text-yellow-600" />
+                ) : (
+                  <Moon className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+              <Link
+                href="/auth/login"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+              >
+                Masuk
+              </Link>
+            </div>
           )}
 
           {/* Mobile Menu Button  */}
