@@ -47,21 +47,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-12">Tentang Kami</h2>
-          <p className="text-lg text-gray-600 mb-4">
+          <h2 className="text-4xl font-bold mb-12 text-gray-900 dark:text-white">Tentang Kami</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
             Perpus System adalah platform manajemen perpustakaan modern yang dirancang untuk memudahkan pengelolaan koleksi buku.
           </p>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center">Koleksi Terbaru Kami</h2>
+          <h2 className="text-3xl font-bold mb-12 text-center text-gray-900 dark:text-white">Koleksi Terbaru Kami</h2>
           {loadingBooks ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">Memuat buku...</p>
+              <p className="text-gray-500 dark:text-gray-400">Memuat buku...</p>
             </div>
           ) : (
             <>
@@ -70,19 +70,19 @@ export default function LandingPage() {
                   <button
                     key={book.id}
                     onClick={() => router.push(`/dashboard/books/${book.id}`)}
-                    className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 cursor-pointer text-left"
+                    className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 cursor-pointer text-left"
                   >
-                    <div className="bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
+                    <div className="bg-gray-200 dark:bg-gray-700 h-48 flex items-center justify-center overflow-hidden">
                       {book.image ? (
                         <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
                       ) : (
-                        <BookOpen className="w-12 h-12 text-gray-400" />
+                        <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                       )}
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{book.title}</h3>
-                      <p className="text-sm text-gray-600 mb-3">{book.author}</p>
-                      <div className="flex justify-between text-xs text-gray-500">
+                      <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">{book.title}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{book.author}</p>
+                      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                         <span>Stok: {book.stock}</span>
                       </div>
                     </div>
@@ -96,20 +96,20 @@ export default function LandingPage() {
                     <button
                       key={book.id}
                       onClick={() => router.push(`/dashboard/books/${book.id}`)}
-                      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer flex-shrink-0"
+                      className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer flex-shrink-0"
                       style={{ width: '200px' }}
                     >
-                      <div className="bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
+                      <div className="bg-gray-200 dark:bg-gray-700 h-48 flex items-center justify-center overflow-hidden">
                         {book.image ? (
                           <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
                         ) : (
-                          <BookOpen className="w-12 h-12 text-gray-400" />
+                          <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                         )}
                       </div>
                       <div className="p-4 text-left">
-                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 text-sm">{book.title}</h3>
-                        <p className="text-xs text-gray-600 mb-3">{book.author}</p>
-                        <div className="flex justify-between text-xs text-gray-500">
+                        <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2 text-sm">{book.title}</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{book.author}</p>
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                           <span>Stok: {book.stock}</span>
                         </div>
                       </div>
@@ -130,21 +130,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-12">Layanan Kami</h2>
+          <h2 className="text-4xl font-bold mb-12 text-gray-900 dark:text-white">Layanan Kami</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Koleksi Buku Card */}
             <button
               onClick={() => router.push("/dashboard/books")}
-              className="bg-white p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
+              className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
             >
-              <div className="inline-block mb-4 p-3 bg-blue-50 rounded-lg group-hover:rotate-12 transition-transform duration-300">
-                <BookOpen className="w-8 h-8 text-blue-600" />
+              <div className="inline-block mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Koleksi Buku</h3>
-              <p className="text-gray-600">Jelajahi ribuan koleksi buku digital dalam sistem kami</p>
-              <div className="mt-4 flex items-center text-blue-600 font-semibold">
+              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Koleksi Buku</h3>
+              <p className="text-gray-600 dark:text-gray-400">Jelajahi ribuan koleksi buku digital dalam sistem kami</p>
+              <div className="mt-4 flex items-center text-blue-600 dark:text-blue-400 font-semibold">
                 Lihat Koleksi <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </div>
             </button>
@@ -152,14 +152,14 @@ export default function LandingPage() {
             {/* Manajemen Peminjaman Card */}
             <button
               onClick={() => router.push("/dashboard/borrow")}
-              className="bg-white p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
+              className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
             >
-              <div className="inline-block mb-4 p-3 bg-purple-50 rounded-lg group-hover:rotate-12 transition-transform duration-300">
-                <Users className="w-8 h-8 text-purple-600" />
+              <div className="inline-block mb-4 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                <Users className="w-8 h-8 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Manajemen Peminjaman</h3>
-              <p className="text-gray-600">Kelola semua permintaan dan riwayat peminjaman dengan mudah</p>
-              <div className="mt-4 flex items-center text-purple-600 font-semibold">
+              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Manajemen Peminjaman</h3>
+              <p className="text-gray-600 dark:text-gray-400">Kelola semua permintaan dan riwayat peminjaman dengan mudah</p>
+              <div className="mt-4 flex items-center text-purple-600 dark:text-purple-400 font-semibold">
                 Kelola Sekarang <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </div>
             </button>
@@ -167,14 +167,14 @@ export default function LandingPage() {
             {/* Panduan Meminjam Card */}
             <button
               onClick={() => router.push("/panduan/meminjam")}
-              className="bg-white p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
+              className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
             >
-              <div className="inline-block mb-4 p-3 bg-pink-50 rounded-lg group-hover:rotate-12 transition-transform duration-300">
-                <Search className="w-8 h-8 text-pink-600" />
+              <div className="inline-block mb-4 p-3 bg-pink-50 dark:bg-pink-900/30 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                <Search className="w-8 h-8 text-pink-600 dark:text-pink-400" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Panduan Meminjam</h3>
-              <p className="text-gray-600">Pelajari cara meminjam buku dan semua layanan yang tersedia</p>
-              <div className="mt-4 flex items-center text-pink-600 font-semibold">
+              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Panduan Meminjam</h3>
+              <p className="text-gray-600 dark:text-gray-400">Pelajari cara meminjam buku dan semua layanan yang tersedia</p>
+              <div className="mt-4 flex items-center text-pink-600 dark:text-pink-400 font-semibold">
                 Baca Panduan <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </div>
             </button>
@@ -182,28 +182,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <Users2 className="w-12 h-12 text-pink-600 mx-auto mb-3" />
-              <p className="text-4xl font-bold text-pink-600">1.271</p>
-              <p className="text-gray-600 mt-2">Anggota Perpustakaan</p>
+              <Users2 className="w-12 h-12 text-pink-600 dark:text-pink-400 mx-auto mb-3" />
+              <p className="text-4xl font-bold text-pink-600 dark:text-pink-400">1.271</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Anggota Perpustakaan</p>
             </div>
             <div className="text-center">
-              <BookOpen className="w-12 h-12 text-pink-600 mx-auto mb-3" />
-              <p className="text-4xl font-bold text-pink-600">15.052+</p>
-              <p className="text-gray-600 mt-2">Koleksi Buku</p>
+              <BookOpen className="w-12 h-12 text-pink-600 dark:text-pink-400 mx-auto mb-3" />
+              <p className="text-4xl font-bold text-pink-600 dark:text-pink-400">15.052+</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Koleksi Buku</p>
             </div>
             <div className="text-center">
-              <Eye className="w-12 h-12 text-pink-600 mx-auto mb-3" />
-              <p className="text-4xl font-bold text-pink-600">137+</p>
-              <p className="text-gray-600 mt-2">Pengunjung</p>
+              <Eye className="w-12 h-12 text-pink-600 dark:text-pink-400 mx-auto mb-3" />
+              <p className="text-4xl font-bold text-pink-600 dark:text-pink-400">137+</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Pengunjung</p>
             </div>
             <div className="text-center">
-              <Gift className="w-12 h-12 text-pink-600 mx-auto mb-3" />
-              <p className="text-4xl font-bold text-pink-600">14.978+</p>
-              <p className="text-gray-600 mt-2">Peminjaman</p>
+              <Gift className="w-12 h-12 text-pink-600 dark:text-pink-400 mx-auto mb-3" />
+              <p className="text-4xl font-bold text-pink-600 dark:text-pink-400">14.978+</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Peminjaman</p>
             </div>
           </div>
         </div>
