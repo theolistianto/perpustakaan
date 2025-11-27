@@ -105,7 +105,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         )}
 
         {/* Menu Items */}
-        <nav className="p-6 space-y-2 flex-1 overflow-y-auto">
+        <nav className="p-6 space-y-2 flex-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
