@@ -39,7 +39,7 @@ export default function DashboardLayout({
         <Menu className="w-6 h-6" />
       </button>
 
-      <main className="flex-1 p-6 w-full lg:ml-64">{children}</main>
+      <main className="flex-1 p-6 w-full">{children}</main>
     </div>
   );
 }
