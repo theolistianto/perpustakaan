@@ -83,23 +83,23 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:relative w-64 bg-gray-900 text-white shadow-lg flex flex-col h-screen z-50 transition-transform duration-300 ${
+        className={`fixed lg:relative w-64 bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 text-white shadow-2xl flex flex-col h-screen z-50 transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-800 flex justify-between items-center">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-700 dark:border-gray-800 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white shadow-lg">
               <BookOpen className="w-5 h-5" />
             </div>
-            <span className="font-bold">
+            <span className="font-bold text-sm sm:text-base">
               Perpus<span className="text-blue-400">System</span>
             </span>
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden text-gray-400 hover:text-white"
+            className="lg:hidden text-gray-400 hover:text-white transition"
           >
             <X className="w-6 h-6" />
           </button>
@@ -107,13 +107,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* User Info */}
         {userRole && (
-          <div className="p-6 border-b border-gray-800">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-700 dark:border-gray-800 bg-gray-800/50 dark:bg-gray-900/50">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center font-semibold">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center font-semibold text-white shadow-md flex-shrink-0">
                 {userUsername?.charAt(0).toUpperCase() || "U"}
               </div>
-              <div>
-                <p className="font-semibold text-sm">{userUsername || "User"}</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-white truncate">{userUsername || "User"}</p>
                 <p className="text-xs text-gray-400">
                   {userRole === "admin" ? "Admin" : "Pengunjung"}
                 </p>
@@ -123,17 +123,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         )}
 
         {/* Menu Items */}
-        <nav className="p-6 space-y-2 flex-1">
+        <nav className="px-3 sm:px-4 py-4 space-y-2 flex-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
               <button
                 key={item.path}
                 onClick={() => handleNavigate(item.path)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"
+                className="w-full flex items-center gap-3 px-3 sm:px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-700 hover:text-white transition duration-150"
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
-                <span className="text-left">{item.label}</span>
+                <span className="text-left text-sm">{item.label}</span>
               </button>
             );
           })}
@@ -141,27 +141,30 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Logout Button & Dark Mode Toggle */}
         {userRole && (
-          <div className="p-6 border-t border-gray-800 space-y-3">
+          <div className="px-3 sm:px-4 py-4 border-t border-gray-700 dark:border-gray-800 space-y-2">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition"
+              className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-red-600 hover:bg-red-700 dark:hover:bg-red-600 rounded-lg font-semibold transition duration-150 text-sm"
             >
               <LogOut className="w-4 h-4" />
-              Logout
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Log out</span>
             </button>
             <button
               onClick={toggleDarkMode}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition"
+              className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-gray-700 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg font-semibold transition duration-150 text-sm"
             >
               {isDark ? (
                 <>
                   <Sun className="w-4 h-4" />
-                  Light Mode
+                  <span className="hidden sm:inline">Light Mode</span>
+                  <span className="sm:hidden">Light</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-4 h-4" />
-                  Dark Mode
+                  <span className="hidden sm:inline">Dark Mode</span>
+                  <span className="sm:hidden">Dark</span>
                 </>
               )}
             </button>
