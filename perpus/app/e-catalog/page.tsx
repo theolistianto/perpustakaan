@@ -37,7 +37,7 @@ export default function ECatalogPage() {
       <Navbar />
       
       {/* Hero Section with Background Image */}
-      <section className="pt-2 px-4 pb-4">
+      <section className="pt-1 px-4 pb-4">
         <div className="max-w-7xl mx-auto">
           <div className="bg-contain bg-center bg-no-repeat rounded-3xl" style={{ backgroundImage: "url('/e-catalog-hero.png')", paddingBottom: "55%" }}></div>
         </div>
