@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PERPUSCIS - Sistem Manajemen Perpustakaan Digital",
+  title: "PERPUSCIS",
   description:
     "Platform manajemen perpustakaan modern yang dirancang untuk memudahkan pengelolaan koleksi buku",
   icons: {
