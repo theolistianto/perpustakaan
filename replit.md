@@ -133,6 +133,17 @@ This endpoint creates:
 
 ## Recent Changes (November 27, 2025)
 
+### Auth Middleware for Navigation ✅
+- ✅ **Auth Middleware** (`/lib/auth-middleware.ts`) - Checks authentication before navigating:
+  - Protected routes: /dashboard/books, /dashboard/borrow, /dashboard/settings, /panduan/meminjam
+  - When guest user clicks protected link → redirect to /auth/login
+  - Stores intended destination in sessionStorage for redirect after login
+  - Auto-closes mobile menu after navigation
+- ✅ **Navbar Navigation** - Updated to use onClick handlers with auth middleware:
+  - Desktop: button with navigateWithAuth function
+  - Mobile: button with auto-close menu + auth check
+  - Seamless redirect to login for protected routes
+
 ### Navbar Menu Enhancement (Guest Users) ✅
 - ✅ **Navbar Menu When Not Logged In** - Updated to show public navigation:
   - Buku (Books catalog)

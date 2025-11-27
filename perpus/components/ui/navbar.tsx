@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Library, LogOut, Menu, X, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
+import { navigateWithAuth } from "@/lib/auth-middleware";
 
 export default function Navbar() {
   const router = useRouter();
@@ -89,13 +90,13 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             {menuItems.map((item) => (
-              <Link
+              <button
                 key={item.href}
-                href={item.href}
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition font-medium"
+                onClick={() => navigateWithAuth(item.href, router)}
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition font-medium bg-transparent border-none cursor-pointer"
               >
                 {item.label}
-              </Link>
+              </button>
             ))}
           </div>
 
@@ -167,13 +168,16 @@ export default function Navbar() {
         {isOpen && (
           <div className="lg:hidden pb-4 border-t border-gray-200 dark:border-gray-800">
             {menuItems.map((item) => (
-              <Link
+              <button
                 key={item.href}
-                href={item.href}
-                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                onClick={() => {
+                  navigateWithAuth(item.href, router);
+                  setIsOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition bg-transparent border-none cursor-pointer"
               >
                 {item.label}
-              </Link>
+              </button>
             ))}
             
             {/* Dark Mode Toggle - Mobile */}
