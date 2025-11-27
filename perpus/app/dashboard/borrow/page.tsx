@@ -15,6 +15,7 @@ interface BorrowRequest {
   id: number;
   status: string;
   borrowDate: string;
+  dueDate?: string;
   returnDate?: string;
   book: {
     id: number;
