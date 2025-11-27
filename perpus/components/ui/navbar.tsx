@@ -54,7 +54,10 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : [
+    ...(userRole === "admin" ? [
+      { label: "Setting", href: "/dashboard/settings" },
+      { label: "Cara Meminjam", href: "/panduan/meminjam" },
+    ] : [
       { label: "Peminjaman Saya", href: "/dashboard/borrow" },
       { label: "Cara Meminjam", href: "/panduan/meminjam" },
     ]),
