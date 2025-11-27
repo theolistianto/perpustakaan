@@ -67,9 +67,6 @@ export default function Navbar() {
         ]
     )
     : [
-        { label: "Beranda", href: "/" },
-        { label: "Tentang Kami", href: "#about" },
-        { label: "Panduan", href: "/contoh-denda" },
         { label: "Buku", href: "/dashboard/books" },
         { label: "Cara Meminjam", href: "/panduan/meminjam" },
       ];

@@ -135,9 +135,6 @@ This endpoint creates:
 
 ### Navbar Menu Enhancement (Guest Users) ✅
 - ✅ **Navbar Menu When Not Logged In** - Updated to show public navigation:
-  - Beranda (Home)
-  - Tentang Kami (About Us)
-  - Panduan (Guide/Example page with fine examples)
   - Buku (Books catalog)
   - Cara Meminjam (How to Borrow)
 - ✅ **Admin Menu** - Setting, Cara Meminjam, Buku
