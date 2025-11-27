@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect x="10" y="10" width="80" height="80" fill="url(#grad)" rx="12"/>
+  
+  <!-- Books Stack -->
+  <!-- Book 1 (Bottom) -->
+  <rect x="25" y="55" width="50" height="8" fill="white" rx="1"/>
+  
+  <!-- Book 2 (Middle) -->
+  <rect x="25" y="42" width="50" height="8" fill="#e0e7ff" rx="1"/>
+  <line x1="50" y1="42" x2="50" y2="50" stroke="white" stroke-width="1.5"/>
+  
+  <!-- Book 3 (Top) -->
+  <rect x="25" y="29" width="50" height="8" fill="white" rx="1"/>
+  <line x1="50" y1="29" x2="50" y2="37" stroke="#2563eb" stroke-width="1.5"/>
+  
+  <!-- Open Book Pages effect -->
+  <path d="M 25 42 Q 35 45 45 42 Q 35 45 25 48" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+</svg>

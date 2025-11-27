@@ -134,10 +134,11 @@ This endpoint creates:
 ## Recent Changes (November 27, 2025)
 
 ### Favicon & Metadata Setup ✅
-- ✅ **Browser Tab Icon** - Added SVG favicon with gradient blue-purple design
+- ✅ **Browser Tab Icon** - Study/Library icon (stacked books) with gradient blue-purple design
 - ✅ **Page Title** - "PERPUSCIS - Sistem Manajemen Perpustakaan Digital"
 - ✅ **Meta Description** - Platform manajemen perpustakaan modern
 - ✅ **Metadata** - Configured in app/layout.tsx with Next.js metadata API
+- ✅ **Icon File** - SVG favicon stored in /public/favicon.svg
 
 ### Auth Middleware for Navigation ✅
 - ✅ **Auth Middleware** (`/lib/auth-middleware.ts`) - Checks authentication before navigating:
