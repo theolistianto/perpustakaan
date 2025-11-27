@@ -2,16 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Library, Menu, X, LogOut } from "lucide-react";
+import { Library, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface NavbarProps {
-  onMenuClick?: () => void;
-}
-
-export default function Navbar({ onMenuClick }: NavbarProps) {
+export default function Navbar() {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const [userUsername, setUserUsername] = useState<string | null>(null);
@@ -38,11 +33,6 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
     window.location.reload();
   };
 
-  const handleMenuClick = () => {
-    if (onMenuClick) onMenuClick();
-    else setIsOpen(!isOpen);
-  };
-
   const menuItems = [
     { label: "E-Catalog", href: "/e-catalog" },
     ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : [
@@ -55,9 +45,8 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40">
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white">
@@ -113,60 +102,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
               Masuk
             </Link>
           )}
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={handleMenuClick}
-            className="lg:hidden text-gray-700 dark:text-gray-300"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-200 dark:border-gray-800">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-              >
-                {item.label}
-              </Link>
-            ))}
-            {userRole ? (
-              <>
-                <div className="px-4 py-2 text-sm">
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {userUsername || "User"}
-                  </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {userRole === "admin" ? "Admin" : "Pengunjung"}
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsOpen(false);
-                  }}
-                  className="w-full mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition flex items-center justify-center gap-2"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Logout
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/auth/login"
-                onClick={() => setIsOpen(false)}
-                className="w-full mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition block text-center"
-              >
-                Masuk
-              </Link>
-            )}
-          </div>
-        )}
       </div>
     </nav>
   );
