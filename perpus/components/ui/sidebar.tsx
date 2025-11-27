@@ -1,19 +1,23 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun, BookOpen, Users, BarChart3, Plus, LogOut, Settings, Home, HelpCircle, Menu, X } from "lucide-react";
-import { useTheme } from "next-themes";
+import { BookOpen, LogOut, Settings, Home, HelpCircle, Menu, X, BarChart3, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-export default function Sidebar() {
-  const { theme, setTheme } = useTheme();
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const router = useRouter();
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [userUsername, setUserUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
+    const username = localStorage.getItem("userUsername");
     setUserRole(role);
+    setUserUsername(username);
   }, []);
 
   const adminMenuItems = [
@@ -37,25 +41,33 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userUsername");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("token");
-    router.push("/");
+    router.push("/auth/signup");
+    window.location.reload();
+  };
+
+  const handleNavigate = (path: string) => {
+    router.push(path);
+    onClose();
   };
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </button>
+      {/* Overlay untuk mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
       {/* Sidebar */}
       <div
-        className={`fixed md:relative w-64 bg-white dark:bg-gray-800 shadow-lg p-4 flex flex-col h-screen z-40 transform md:transform-none transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        className={`fixed lg:relative w-64 bg-gray-900 text-white shadow-lg flex flex-col h-screen z-50 transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="mb-4">
