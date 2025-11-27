@@ -10,6 +10,7 @@ interface Book {
   stock: number;
   image?: string;
   categoryId: number;
+  shelfId: number;
   category?: { name: string };
   shelf?: { name: string };
 }
@@ -204,49 +205,67 @@ export default function BookCategoryPage() {
           <p className="text-gray-500 dark:text-gray-400">Buku tidak ditemukan</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {filteredBooks.map((book) => (
-            <Link
-              key={book.id}
-              href={`/dashboard/books/${book.id}`}
-              className="group"
-            >
-              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition h-full flex flex-col cursor-pointer">
-                <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition overflow-hidden">
-                  {book.image ? (
-                    <img
-                      src={book.image}
-                      alt={book.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  ) : (
-                    <BookOpen className="w-16 h-16 text-gray-400 group-hover:scale-110 group-hover:text-gray-500 transition-all" />
-                  )}
-                  {book.stock === 0 && (
-                    <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
-                      Stok Habis
-                    </div>
-                  )}
-                  {book.stock > 0 && (
-                    <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
-                      Stok: {book.stock}
-                    </div>
-                  )}
-                </div>
+        <div className="space-y-8">
+          {["Rak A", "Rak B", "Rak C", "Rak D"].map((rakName) => {
+            const booksInRak = filteredBooks.filter(
+              (book) => book.shelf?.name === rakName
+            );
+            
+            if (booksInRak.length === 0) return null;
 
-                <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
-                      {book.author}
-                    </p>
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                      {book.title}
-                    </h3>
-                  </div>
+            return (
+              <div key={rakName}>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <div className="w-2 h-8 bg-blue-600 rounded"></div>
+                  {rakName}
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {booksInRak.map((book) => (
+                    <Link
+                      key={book.id}
+                      href={`/dashboard/books/${book.id}`}
+                      className="group"
+                    >
+                      <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-500 transition h-full flex flex-col cursor-pointer">
+                        <div className="relative bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-700 h-56 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition overflow-hidden">
+                          {book.image ? (
+                            <img
+                              src={book.image}
+                              alt={book.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          ) : (
+                            <BookOpen className="w-16 h-16 text-gray-400 group-hover:scale-110 group-hover:text-gray-500 transition-all" />
+                          )}
+                          {book.stock === 0 && (
+                            <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
+                              Stok Habis
+                            </div>
+                          )}
+                          {book.stock > 0 && (
+                            <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 text-xs rounded-full font-semibold">
+                              Stok: {book.stock}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-3 bg-white dark:bg-gray-800 flex-1 flex flex-col justify-between">
+                          <div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-1">
+                              {book.author}
+                            </p>
+                            <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                              {book.title}
+                            </h3>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
 
