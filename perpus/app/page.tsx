@@ -175,9 +175,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
             <div>
-              <h2 className="text-3xl font-bold mb-4">Perpus<span className="text-pink-600">System</span></h2>
+              <h2 className="text-3xl font-bold mb-4">PERPUS<span className="text-pink-600">CIS</span></h2>
               <p className="text-gray-400 leading-relaxed">
-                Perpustakaan DPR RI hadir sebagai pusat literasi dan sumber pengetahuan untuk masyarakat, menyediakan akses koleksi, informasi, dan layanan yang mendukung pengembangan wawasan serta peningkatan literasi bangsa.
+                Perpustakaan hadir sebagai pusat literasi dan sumber pengetahuan untuk masyarakat, menyediakan akses koleksi, informasi, dan layanan yang mendukung pengembangan wawasan serta peningkatan literasi bangsa.
               </p>
             </div>
             <div>
@@ -193,13 +193,13 @@ export default function LandingPage() {
                 </div>
                 <div className="flex gap-3">
                   <Mail className="w-5 h-5 text-pink-600 flex-shrink-0 mt-1" />
-                  <span>Email: perpustakaan@Gmail.com</span>
+                  <span>Email: theolistianto6@Gmail.com</span>
                 </div>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 flex justify-between items-center">
-            <p className="text-gray-400">© 2025 Perpus System. All Rights Reserved.</p>
+            <p className="text-gray-400">© 2025 PERPUSCIS. All Rights Reserved.</p>
             <div className="flex gap-4">
               <a href="#" className="text-gray-400 hover:text-white transition">
                 <Facebook className="w-5 h-5" />
