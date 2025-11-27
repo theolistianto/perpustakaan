@@ -42,30 +42,8 @@ export default function LandingPage() {
       <section className="h-96 bg-cover bg-center relative" style={{ backgroundImage: "url('/library-hero.png')" }}>
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="max-w-full lg:max-w-7xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
-          <h1 className="text-5xl font-bold text-white mb-4">Perpus System</h1>
-          <p className="text-xl text-white/90 mb-8">Sistem Manajemen Perpustakaan Modern</p>
-          
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            const query = (e.target as HTMLFormElement).querySelector('input')?.value;
-            if (query?.trim()) {
-              router.push("/dashboard/books?search=" + encodeURIComponent(query));
-            }
-          }} className="max-w-2xl">
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Cari buku..."
-                  className="w-full pl-12 pr-4 py-3 rounded-lg"
-                />
-              </div>
-              <button type="submit" className="px-8 py-3 bg-pink-600 text-white rounded-lg font-semibold">
-                Cari
-              </button>
-            </div>
-          </form>
+          <h1 className="text-5xl font-bold text-white mb-4">PERPUSCIS</h1>
+          <p className="text-xl text-white/90 mb-8">Sistem Manajemen Perpustakaan Digital</p>
         </div>
       </section>
 
@@ -221,7 +199,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex gap-3">
                   <Mail className="w-5 h-5 text-pink-600 flex-shrink-0 mt-1" />
-                  <span>Email: perpustakaandpr@dpr.go.id</span>
+                  <span>Email: perpustakaan@Gmail.com</span>
                 </div>
               </div>
             </div>
