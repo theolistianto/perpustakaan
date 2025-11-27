@@ -53,16 +53,26 @@ export default function Navbar() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const menuItems = [
-    ...(userRole === "admin" ? [
-      { label: "Setting", href: "/dashboard/settings" },
-      { label: "Cara Meminjam", href: "/panduan/meminjam" },
-    ] : [
-      { label: "Peminjaman Saya", href: "/dashboard/borrow" },
-      { label: "Cara Meminjam", href: "/panduan/meminjam" },
-    ]),
-    { label: "Buku", href: "/dashboard/books" },
-  ];
+  const menuItems = userRole 
+    ? (userRole === "admin" 
+      ? [
+          { label: "Setting", href: "/dashboard/settings" },
+          { label: "Cara Meminjam", href: "/panduan/meminjam" },
+          { label: "Buku", href: "/dashboard/books" },
+        ]
+      : [
+          { label: "Peminjaman Saya", href: "/dashboard/borrow" },
+          { label: "Cara Meminjam", href: "/panduan/meminjam" },
+          { label: "Buku", href: "/dashboard/books" },
+        ]
+    )
+    : [
+        { label: "Beranda", href: "/" },
+        { label: "Tentang Kami", href: "#about" },
+        { label: "Panduan", href: "/contoh-denda" },
+        { label: "Buku", href: "/dashboard/books" },
+        { label: "Cara Meminjam", href: "/panduan/meminjam" },
+      ];
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40">

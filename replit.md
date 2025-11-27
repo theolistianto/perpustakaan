@@ -133,6 +133,16 @@ This endpoint creates:
 
 ## Recent Changes (November 27, 2025)
 
+### Navbar Menu Enhancement (Guest Users) ✅
+- ✅ **Navbar Menu When Not Logged In** - Updated to show public navigation:
+  - Beranda (Home)
+  - Tentang Kami (About Us)
+  - Panduan (Guide/Example page with fine examples)
+  - Buku (Books catalog)
+  - Cara Meminjam (How to Borrow)
+- ✅ **Admin Menu** - Setting, Cara Meminjam, Buku
+- ✅ **Member Menu** - Peminjaman Saya, Cara Meminjam, Buku
+
 ### Riwayat Peminjaman Card UI Upgrade ✅
 - ✅ **Simple Card Layout** (`/dashboard/borrow` tab "Riwayat Peminjaman"):
   - Clean card-based UI (responsive desktop + mobile)
