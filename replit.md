@@ -133,6 +133,12 @@ This endpoint creates:
 
 ## Recent Changes (November 27, 2025)
 
+### Favicon & Metadata Setup ✅
+- ✅ **Browser Tab Icon** - Added SVG favicon with gradient blue-purple design
+- ✅ **Page Title** - "PERPUSCIS - Sistem Manajemen Perpustakaan Digital"
+- ✅ **Meta Description** - Platform manajemen perpustakaan modern
+- ✅ **Metadata** - Configured in app/layout.tsx with Next.js metadata API
+
 ### Auth Middleware for Navigation ✅
 - ✅ **Auth Middleware** (`/lib/auth-middleware.ts`) - Checks authentication before navigating:
   - Protected routes: /dashboard/books, /dashboard/borrow, /dashboard/settings, /panduan/meminjam
