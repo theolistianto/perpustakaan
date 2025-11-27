@@ -270,7 +270,7 @@ export default function BorrowPage() {
       </div>
     );
 
-  const borrowingHistory = requests.filter((r) => r.status === "returned" || (r.status === "approved" && r.returnDate));
+  const borrowingHistory = requests.filter((r) => r.status === "approved");
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
