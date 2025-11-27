@@ -58,3 +58,9 @@ model Borrow {
   user  User @relation(fields: [userId], references: [id])
   book  Book @relation(fields: [bookId], references: [id])
 }
+
+model FineSettings {
+  id              Int     @id @default(autoincrement())
+  finePerSevenDays Int   @default(1000)  // Denda per 7 hari dalam Rupiah
+  maxFine         Int     @default(50000) // Maksimal denda dalam Rupiah
+}

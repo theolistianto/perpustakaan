@@ -13,6 +13,8 @@ interface BorrowRequest {
   id: number;
   status: string;
   borrowDate: string;
+  dueDate: string;
+  returnDate?: string;
   book: {
     id: number;
     title: string;
@@ -34,6 +36,28 @@ export default function PeminjamPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [fines, setFines] = useState<Record<number, number>>({}); // borrowId -> fine amount
+
+  // Helper function to calculate fine
+  const calculateFine = (dueDate: string, returnDate?: string): number => {
+    if (returnDate) return 0; // No fine if already returned
+    
+    const dueDateObj = new Date(dueDate);
+    const today = new Date();
+    const timeDiff = today.getTime() - dueDateObj.getTime();
+    const daysLate = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    if (daysLate <= 0) return 0;
+    
+    // Get fine from localStorage as fallback (default: Rp 1.000 per 7 hari, max Rp 50.000)
+    const finePerSevenDays = parseInt(localStorage.getItem("finePerSevenDays") || "1000");
+    const maxFine = parseInt(localStorage.getItem("maxFine") || "50000");
+    
+    const periodCount = Math.ceil(daysLate / 7);
+    let fine = periodCount * finePerSevenDays;
+    
+    return Math.min(fine, maxFine);
+  };
 
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
@@ -62,6 +86,13 @@ export default function PeminjamPage() {
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
+        
+        // Calculate fines for each borrow
+        const calculatedFines: Record<number, number> = {};
+        data.forEach((borrow: BorrowRequest) => {
+          calculatedFines[borrow.id] = calculateFine(borrow.dueDate, borrow.returnDate);
+        });
+        setFines(calculatedFines);
       }
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -270,6 +301,9 @@ export default function PeminjamPage() {
                     Email
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Denda
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Aksi
                   </th>
                 </tr>
@@ -294,6 +328,15 @@ export default function PeminjamPage() {
                     </td>
                     <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
                       {req.user.email}
+                    </td>
+                    <td className="py-4 px-6">
+                      {fines[req.id] ? (
+                        <span className={`font-semibold ${fines[req.id] > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                          {fines[req.id] > 0 ? `Rp ${fines[req.id].toLocaleString('id-ID')}` : 'Tidak ada'}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex gap-2">
@@ -347,6 +390,12 @@ export default function PeminjamPage() {
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 break-all">
                     <span className="font-semibold">Email:</span> {req.user.email}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-gray-600 dark:text-gray-400">Denda:</span>{" "}
+                    <span className={`font-semibold ${fines[req.id] > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {fines[req.id] ? (fines[req.id] > 0 ? `Rp ${fines[req.id].toLocaleString('id-ID')}` : 'Tidak ada') : '-'}
+                    </span>
                   </p>
                 </div>
 

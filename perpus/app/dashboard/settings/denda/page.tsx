@@ -8,15 +8,27 @@ export default function DendaPage() {
   const [dailyFine, setDailyFine] = useState<number>(1000);
   const [maxFine, setMaxFine] = useState<number>(50000);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Load settings from localStorage
+  // Load settings from database
   useEffect(() => {
-    const savedDailyFine = localStorage.getItem("dailyFine");
-    const savedMaxFine = localStorage.getItem("maxFine");
+    const loadSettings = async () => {
+      try {
+        const res = await fetch("/api/fine-settings");
+        if (res.ok) {
+          const data = await res.json();
+          setDailyFine(data.finePerSevenDays);
+          setMaxFine(data.maxFine);
+        }
+      } catch (error) {
+        console.error("Error loading settings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    if (savedDailyFine) setDailyFine(parseInt(savedDailyFine));
-    if (savedMaxFine) setMaxFine(parseInt(savedMaxFine));
+    loadSettings();
   }, []);
 
   const handleSave = async () => {
@@ -39,20 +51,33 @@ export default function DendaPage() {
     setIsSaving(true);
 
     try {
-      // Save to localStorage (in production, this would be saved to database via API)
-      localStorage.setItem("dailyFine", dailyFine.toString());
-      localStorage.setItem("maxFine", maxFine.toString());
-
-      setMessage({
-        type: "success",
-        text: "Pengaturan denda berhasil disimpan!",
+      // Save to database via API
+      const res = await fetch("/api/fine-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          finePerSevenDays: dailyFine,
+          maxFine: maxFine,
+        }),
       });
 
-      setTimeout(() => setMessage(null), 3000);
+      if (res.ok) {
+        setMessage({
+          type: "success",
+          text: "Pengaturan denda berhasil disimpan ke database!",
+        });
+        setTimeout(() => setMessage(null), 3000);
+      } else {
+        const error = await res.json();
+        setMessage({
+          type: "error",
+          text: error.error || "Gagal menyimpan pengaturan denda",
+        });
+      }
     } catch (error) {
       setMessage({
         type: "error",
-        text: "Gagal menyimpan pengaturan denda",
+        text: "Gagal menyimpan pengaturan denda: " + (error as Error).message,
       });
     } finally {
       setIsSaving(false);
@@ -108,6 +133,11 @@ export default function DendaPage() {
       )}
 
       {/* Settings Form */}
+      {isLoading ? (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+          <p className="text-gray-600 dark:text-gray-400">Memuat pengaturan...</p>
+        </div>
+      ) : (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 space-y-8">
         {/* 7-Day Fine Input */}
         <div className="border-b border-gray-200 dark:border-gray-700 pb-8">
@@ -237,6 +267,7 @@ export default function DendaPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Save Button */}
       <div className="mt-8 flex gap-4">
