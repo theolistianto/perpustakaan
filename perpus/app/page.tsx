@@ -123,23 +123,52 @@ export default function LandingPage() {
 
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-12">Layanan</h2>
+          <h2 className="text-4xl font-bold mb-12">Layanan Kami</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow">
-              <BookOpen className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2">BOOKS</h3>
-              <p className="text-gray-600">Jelajahi ribuan koleksi buku digital</p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow">
-              <Users className="w-8 h-8 text-purple-600 mb-4" />
+            {/* Koleksi Buku Card */}
+            <button
+              onClick={() => router.push("/dashboard/books")}
+              className="bg-white p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
+            >
+              <div className="inline-block mb-4 p-3 bg-blue-50 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                <BookOpen className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Koleksi Buku</h3>
+              <p className="text-gray-600">Jelajahi ribuan koleksi buku digital dalam sistem kami</p>
+              <div className="mt-4 flex items-center text-blue-600 font-semibold">
+                Lihat Koleksi <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+
+            {/* Manajemen Peminjaman Card */}
+            <button
+              onClick={() => router.push("/dashboard/borrow")}
+              className="bg-white p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
+            >
+              <div className="inline-block mb-4 p-3 bg-purple-50 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                <Users className="w-8 h-8 text-purple-600" />
+              </div>
               <h3 className="text-xl font-bold mb-2">Manajemen Peminjaman</h3>
-              <p className="text-gray-600">Kelola peminjaman dengan mudah</p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow">
-              <Search className="w-8 h-8 text-pink-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Pencarian Cepat</h3>
-              <p className="text-gray-600">Temukan buku dalam sekejap</p>
-            </div>
+              <p className="text-gray-600">Kelola semua permintaan dan riwayat peminjaman dengan mudah</p>
+              <div className="mt-4 flex items-center text-purple-600 font-semibold">
+                Kelola Sekarang <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+
+            {/* Panduan Meminjam Card */}
+            <button
+              onClick={() => router.push("/panduan/meminjam")}
+              className="bg-white p-8 rounded-lg shadow hover:shadow-xl hover:scale-105 hover:-translate-y-2 transition-all duration-300 text-left group cursor-pointer"
+            >
+              <div className="inline-block mb-4 p-3 bg-pink-50 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+                <Search className="w-8 h-8 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Panduan Meminjam</h3>
+              <p className="text-gray-600">Pelajari cara meminjam buku dan semua layanan yang tersedia</p>
+              <div className="mt-4 flex items-center text-pink-600 font-semibold">
+                Baca Panduan <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
           </div>
         </div>
       </section>
