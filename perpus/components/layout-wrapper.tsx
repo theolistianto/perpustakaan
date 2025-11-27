@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/ui/navbar";
 import Sidebar from "@/components/ui/sidebar";
+import { Menu } from "lucide-react";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,11 +10,16 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   return (
     <div className="flex">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex-1 flex flex-col">
-        {/* Navbar hanya muncul saat sidebar ditutup */}
-        <div className={`${sidebarOpen ? "hidden" : "block"}`}>
-          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-        </div>
+      
+      {/* Floating Hamburger Button - Mobile Only */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed bottom-6 right-6 z-40 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
+      <div className="flex-1">
         {children}
       </div>
     </div>

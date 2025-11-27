@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BookOpen, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebook, Twitter, Instagram, ArrowRight } from "lucide-react";
+import { BookOpen, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebook, Twitter, Instagram, ArrowRight, Zap, Heart } from "lucide-react";
 
 interface Book {
   id: number;
@@ -39,7 +39,7 @@ export default function LandingPage() {
     <div>
       <section className="h-96 bg-cover bg-center relative" style={{ backgroundImage: "url('/library-hero.png')" }}>
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+        <div className="max-w-full lg:max-w-7xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
           <h1 className="text-5xl font-bold text-white mb-4">Perpus System</h1>
           <p className="text-xl text-white/90 mb-8">Sistem Manajemen Perpustakaan Modern</p>
           
