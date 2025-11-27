@@ -49,9 +49,9 @@ export default function LandingPage() {
 
       <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-12 text-gray-900 dark:text-white">Tentang Kami</h2>
+          <h2 className="text-4xl font-bold mb-12 text-gray-900 dark:text-white">PERPUSTAKAAN</h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
-            Perpus System adalah platform manajemen perpustakaan modern yang dirancang untuk memudahkan pengelolaan koleksi buku.
+            PERPUSCIS adalah platform manajemen perpustakaan modern yang dirancang untuk memudahkan pengelolaan koleksi buku.
           </p>
         </div>
       </section>
