@@ -133,7 +133,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-lg shadow">
               <BookOpen className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Katalog Digital</h3>
+              <h3 className="text-xl font-bold mb-2">BOOKS</h3>
               <p className="text-gray-600">Jelajahi ribuan koleksi buku digital</p>
             </div>
             <div className="bg-white p-8 rounded-lg shadow">
