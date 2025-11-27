@@ -205,12 +205,12 @@ export default function BookDetailPage() {
 
           <div className="md:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+               <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                Oleh <span className="font-semibold text-blue-600 dark:text-blue-400">{book.author}</span>
+              </p>
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 {book.title}
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-                Oleh <span className="font-semibold text-blue-600 dark:text-blue-400">{book.author}</span>
-              </p>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
@@ -225,10 +225,10 @@ export default function BookDetailPage() {
                     {book.shelf?.name || "N/A"}
                   </p>
                 </div>
-                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                <div className="bg-green-100 dark:bg-green-1000/20 p-4 rounded-lg">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Stok Tersedia</p>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {book.stock} eksemplar
+                    {book.stock}
                   </p>
                 </div>
               </div>
