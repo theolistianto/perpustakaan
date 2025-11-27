@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Heart, Share2, FileText, X } from "lucide-react";
+import { ArrowLeft, Heart, Share2, FileText, X, Trash2 } from "lucide-react";
 
 interface Book {
   id: number;
@@ -25,11 +25,15 @@ export default function BookDetailPage() {
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
+    const role = localStorage.getItem("userRole");
     setUserEmail(email);
+    setUserRole(role);
 
     const fetchBook = async () => {
       try {
@@ -75,6 +79,31 @@ export default function BookDetailPage() {
       }
     } catch (error) {
       alert("Error: " + (error as Error).message);
+    }
+  };
+
+  const handleDeleteBook = async () => {
+    if (!confirm("Apakah Anda yakin ingin menghapus buku ini? Tindakan ini tidak dapat dibatalkan.")) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/books/${bookId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        alert("Buku berhasil dihapus!");
+        router.push("/dashboard/books");
+      } else {
+        const error = await res.json();
+        alert("Error: " + error.message);
+      }
+    } catch (error) {
+      alert("Error: " + (error as Error).message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -160,6 +189,17 @@ export default function BookDetailPage() {
               >
                 Ajukan Peminjaman
               </button>
+
+              {userRole === "admin" && (
+                <button
+                  onClick={handleDeleteBook}
+                  disabled={deleting}
+                  className="w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 bg-red-600 text-white hover:bg-red-700 transition disabled:bg-red-400 disabled:cursor-not-allowed"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  {deleting ? "Menghapus..." : "Hapus Buku"}
+                </button>
+              )}
             </div>
           </div>
 
