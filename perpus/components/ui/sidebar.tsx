@@ -123,7 +123,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         )}
 
         {/* Menu Items */}
-        <nav className="px-3 sm:px-4 py-4 space-y-2 flex-1">
+        <nav className="px-3 sm:px-4 py-4 space-y-2 flex-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
