@@ -53,7 +53,7 @@ export default function Navbar() {
     <Library className="w-5 h-5" />
   </div>
   <span className="text-gray-900 dark:text-white">
-    PERPUS<span className="text-blue-600">CISN</span>
+    PERPUS<span className="text-blue-600">CIS</span>
   </span>
 </Link>
 
