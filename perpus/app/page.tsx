@@ -1,12 +1,39 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/ui/navbar";
 import { BookOpen, Users, Search, Users2, Eye, Gift, Mail, MapPin, Phone, Facebook, Twitter, Instagram, ArrowRight } from "lucide-react";
 
+interface Book {
+  id: number;
+  title: string;
+  author: string;
+  image?: string;
+  stock: number;
+}
+
 export default function LandingPage() {
   const router = useRouter();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await fetch("/api/books");
+        if (res.ok) {
+          const data = await res.json();
+          setBooks(data.slice(0, 4));
+        }
+      } catch (error) {
+        console.error("Failed to fetch books:", error);
+      } finally {
+        setLoadingBooks(false);
+      }
+    };
+    fetchBooks();
+  }, []);
 
 
   return (
@@ -55,6 +82,48 @@ export default function LandingPage() {
           >
             Jelajahi Katalog <ArrowRight className="w-5 h-5" />
           </button>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-12 text-center">Koleksi Terbaru Kami</h2>
+          {loadingBooks ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Memuat buku...</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                {books.map((book) => (
+                  <div key={book.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
+                    <div className="bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
+                      {book.image ? (
+                        <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <BookOpen className="w-12 h-12 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{book.title}</h3>
+                      <p className="text-sm text-gray-600 mb-3">{book.author}</p>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>Stok: {book.stock}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center">
+                <button
+                  onClick={() => router.push("/dashboard/books")}
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+                >
+                  Lihat Selengkapnya
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
