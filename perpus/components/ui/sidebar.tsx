@@ -94,7 +94,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <BookOpen className="w-5 h-5" />
             </div>
             <span className="font-bold text-sm sm:text-base">
-              Perpus<span className="text-blue-400">System</span>
+              PERPUS<span className="text-blue-400">CIS</span>
             </span>
           </div>
           <button
