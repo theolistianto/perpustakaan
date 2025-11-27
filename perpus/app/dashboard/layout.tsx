@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Sidebar from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -10,6 +11,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const [isAuthed, setIsAuthed] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -25,6 +27,9 @@ export default function DashboardLayout({
   }
 
   return (
-    <main className="flex-1 p-6">{children}</main>
+    <div className="flex min-h-screen bg-blue-50 dark:bg-gray-900">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <main className="flex-1 p-6">{children}</main>
+    </div>
   );
 }
