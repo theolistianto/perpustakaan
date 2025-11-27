@@ -648,40 +648,109 @@ export default function BorrowPage() {
               <p className="text-gray-500 dark:text-gray-400">Belum ada riwayat peminjaman</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {borrowingHistory.map((req) => {
-                const fine = calculateFine(req.borrowDate, req.returnDate);
-                return (
-                  <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Judul Buku</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{req.book.title}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{req.book.author}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanggal Peminjaman</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
-                          {new Date(req.borrowDate).toLocaleDateString("id-ID")}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Batas Pengembalian</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
-                          {req.dueDate ? new Date(req.dueDate).toLocaleDateString("id-ID") : "-"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Denda</p>
-                        <p className={`font-semibold px-3 py-1 rounded-full w-fit ${getFineColor(fine)}`}>
-                          Rp {fine.toLocaleString("id-ID")}
-                        </p>
-                      </div>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">ID</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Judul Buku</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Pengarang</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Waktu Awal Peminjaman</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Batas Pengembalian</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Status</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {borrowingHistory.map((req) => (
+                        <tr key={req.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                          <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">#{req.id}</td>
+                          <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">{req.book.title}</td>
+                          <td className="py-4 px-6 text-gray-600 dark:text-gray-400">{req.book.author}</td>
+                          <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
+                            {new Date(req.borrowDate).toLocaleDateString("id-ID", { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                          <td className="py-4 px-6 text-gray-600 dark:text-gray-400">
+                            {req.dueDate ? new Date(req.dueDate).toLocaleDateString("id-ID", { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric'
+                            }) : "-"}
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                              req.returnDate 
+                                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300" 
+                                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
+                            }`}>
+                              {req.returnDate ? "Dikembalikan" : "Dipinjam"}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6">
+                            <button
+                              onClick={() => handleDelete(req.id)}
+                              className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center gap-2"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Hapus
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {borrowingHistory.map((req) => (
+                  <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-3">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">ID: #{req.id}</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{req.book.title}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{req.book.author}</p>
                     </div>
+
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="font-semibold">Peminjaman:</span> {new Date(req.borrowDate).toLocaleDateString("id-ID")}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="font-semibold">Batas Kembali:</span> {req.dueDate ? new Date(req.dueDate).toLocaleDateString("id-ID") : "-"}
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">Status:</span>{" "}
+                        <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
+                          req.returnDate 
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300" 
+                            : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
+                        }`}>
+                          {req.returnDate ? "Dikembalikan" : "Dipinjam"}
+                        </span>
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleDelete(req.id)}
+                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm flex items-center justify-center gap-2 mt-3"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Hapus
+                    </button>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </>
       )}

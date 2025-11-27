@@ -133,6 +133,17 @@ This endpoint creates:
 
 ## Recent Changes (November 27, 2025)
 
+### Riwayat Peminjaman Table Upgrade ✅
+- ✅ **Table Riwayat Peminjaman** (`/dashboard/borrow` tab "Riwayat Peminjaman") dengan format `/contoh-denda`:
+  - Kolom: ID, Judul Buku, Pengarang, Waktu Awal Peminjaman, Batas Pengembalian, Status, Aksi
+  - Waktu Awal Peminjaman: format lengkap dengan jam menit (contoh: 27 November 2025 14:30)
+  - Batas Pengembalian: format tanggal lengkap (contoh: 27 November 2025)
+  - Status: Badge warna dengan "Dipinjam" (kuning) atau "Dikembalikan" (hijau)
+  - Button Delete: Hapus riwayat peminjaman dengan konfirmasi
+  - Desktop: Table format penuh dengan semua kolom
+  - Mobile: Card layout responsive dengan semua informasi
+  - Styling consistent dengan `/contoh-denda` - warna badge, hover effect, shadow
+
 ### Comprehensive Fine (Denda) System ✅
 - ✅ **FineSettings Model** - Added database table for managing denda configurations
 - ✅ **Fine Settings API** (`/api/fine-settings`) - GET and PATCH endpoints to manage denda settings
