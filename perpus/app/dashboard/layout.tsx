@@ -31,10 +31,10 @@ export default function DashboardLayout({
     <div className="flex min-h-screen bg-blue-50 dark:bg-gray-900">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      {/* Floating Hamburger Button - Mobile Only */}
+      {/* Hamburger Button - Mobile Only */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-40 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
+        className="lg:hidden fixed top-6 right-6 z-40 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
       >
         <Menu className="w-6 h-6" />
       </button>
