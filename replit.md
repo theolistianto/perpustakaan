@@ -157,6 +157,7 @@ This endpoint creates:
   - Cara Meminjam (How to Borrow)
 - ✅ **Admin Menu** - Setting, Cara Meminjam, Buku
 - ✅ **Member Menu** - Peminjaman Saya, Cara Meminjam, Buku
+- ✅ **Logo** - Clean text-only "PERPUSCIS" (icon removed)
 
 ### Riwayat Peminjaman Card UI Upgrade ✅
 - ✅ **Simple Card Layout** (`/dashboard/borrow` tab "Riwayat Peminjaman"):

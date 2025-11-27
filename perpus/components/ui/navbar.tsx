@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Library, LogOut, Menu, X, Moon, Sun } from "lucide-react";
+import { LogOut, Menu, X, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { navigateWithAuth } from "@/lib/auth-middleware";
 
@@ -77,10 +77,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white">
-    <Library className="w-5 h-5" />
-  </div>
+         <Link href="/" className="font-bold text-xl">
   <span className="text-gray-900 dark:text-white">
     PERPUS<span className="text-blue-600">CIS</span>
   </span>
