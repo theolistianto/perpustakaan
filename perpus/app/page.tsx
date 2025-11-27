@@ -24,7 +24,7 @@ export default function LandingPage() {
         const res = await fetch("/api/books");
         if (res.ok) {
           const data = await res.json();
-          setBooks(data.slice(0, 4));
+          setBooks(data.slice(0, 5));
         }
       } catch (error) {
         console.error("Failed to fetch books:", error);
@@ -94,7 +94,7 @@ export default function LandingPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mb-8">
                 {books.map((book) => (
                   <div key={book.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
                     <div className="bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
