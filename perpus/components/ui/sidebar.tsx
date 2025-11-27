@@ -42,7 +42,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: Home, label: "Beranda", path: "/" },
     { icon: BarChart3, label: "Dashboard", path: "/dashboard/dashboard" },
     { icon: BookOpen, label: "Buku", path: "/dashboard/books" },
-    { icon: BookOpen, label: "Peminjaman", path: "/dashboard/borrow" },
+    { icon: BookOpen, label: "Peminjaman", path: "/dashboard/peminjam" },
     { icon: HelpCircle, label: "Cara Meminjam", path: "/panduan/meminjam" },
     { icon: Settings, label: "Settings", path: "/dashboard/settings" },
   ];
