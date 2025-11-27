@@ -109,15 +109,15 @@ export default function DendaPage() {
 
       {/* Settings Form */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 space-y-8">
-        {/* Daily Fine Input */}
+        {/* 7-Day Fine Input */}
         <div className="border-b border-gray-200 dark:border-gray-700 pb-8">
           <div className="flex items-start justify-between mb-4">
             <div>
               <label className="block text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Denda Harian
+                Denda Per 7 Hari
               </label>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Jumlah denda yang dikenakan per hari keterlambatan (dalam Rupiah)
+                Jumlah denda yang dikenakan per 7 hari keterlambatan (dalam Rupiah)
               </p>
             </div>
             <DollarSign className="w-6 h-6 text-blue-600" />
@@ -149,7 +149,7 @@ export default function DendaPage() {
                 }).format(dailyFine)}
               </p>
               <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                per hari keterlambatan
+                per 7 hari keterlambatan
               </p>
             </div>
           </div>
@@ -216,18 +216,22 @@ export default function DendaPage() {
           </h3>
           <div className="space-y-2 text-sm text-blue-800 dark:text-blue-300">
             <p>
-              • Jika peminjam terlambat <span className="font-semibold">5 hari</span>: Rp{" "}
-              {new Intl.NumberFormat("id-ID").format(dailyFine * 5)}
+              • Jika peminjam terlambat <span className="font-semibold">7 hari</span>: Rp{" "}
+              {new Intl.NumberFormat("id-ID").format(dailyFine)}
             </p>
             <p>
-              • Jika peminjam terlambat <span className="font-semibold">10 hari</span>: Rp{" "}
+              • Jika peminjam terlambat <span className="font-semibold">14 hari</span>: Rp{" "}
+              {new Intl.NumberFormat("id-ID").format(dailyFine * 2)}
+            </p>
+            <p>
+              • Jika peminjam terlambat <span className="font-semibold">30 hari</span>: Rp{" "}
               {new Intl.NumberFormat("id-ID").format(
-                Math.min(dailyFine * 10, maxFine)
+                Math.min(Math.ceil((dailyFine * 30) / 7), maxFine)
               )}{" "}
-              {dailyFine * 10 > maxFine && "(Maksimal denda diterbitkan)"}
+              {Math.ceil((dailyFine * 30) / 7) > maxFine && "(Maksimal denda diterbitkan)"}
             </p>
             <p>
-              • Jika peminjam terlambat <span className="font-semibold">100 hari</span>: Rp{" "}
+              • Jika peminjam terlambat <span className="font-semibold">60 hari</span>: Rp{" "}
               {new Intl.NumberFormat("id-ID").format(maxFine)} (Maksimal denda diterbitkan)
             </p>
           </div>
