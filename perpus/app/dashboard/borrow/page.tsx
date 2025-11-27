@@ -15,6 +15,7 @@ interface BorrowRequest {
   id: number;
   status: string;
   borrowDate: string;
+  returnDate?: string;
   book: {
     id: number;
     title: string;
@@ -30,6 +31,11 @@ interface BorrowRequest {
   };
 }
 
+interface FineSettings {
+  finePerDay: number;
+  borrowDuration: number;
+}
+
 export default function BorrowPage() {
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<BorrowRequest[]>([]);
@@ -42,6 +48,11 @@ export default function BorrowPage() {
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [creatingRequest, setCreatingRequest] = useState(false);
+  const [activeTab, setActiveTab] = useState<"requests" | "history">("requests");
+  const [fineSettings, setFineSettings] = useState<FineSettings>({
+    finePerDay: 1000,
+    borrowDuration: 7,
+  });
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -57,7 +68,38 @@ export default function BorrowPage() {
       fetchUserRequests(email);
       fetchBooks();
     }
+    fetchFineSettings();
   }, []);
+
+  const fetchFineSettings = async () => {
+    try {
+      const res = await fetch("/api/settings/fine");
+      if (res.ok) {
+        const data = await res.json();
+        setFineSettings(data);
+      }
+    } catch (error) {
+      console.error("Error fetching fine settings:", error);
+    }
+  };
+
+  const calculateFine = (approvedDate: string, returnDate?: string) => {
+    const approved = new Date(approvedDate);
+    const returned = returnDate ? new Date(returnDate) : new Date();
+    const dueDate = new Date(approved);
+    dueDate.setDate(dueDate.getDate() + fineSettings.borrowDuration);
+    
+    if (returned <= dueDate) return 0;
+    
+    const daysLate = Math.ceil((returned.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysLate * fineSettings.finePerDay;
+  };
+
+  const getFineColor = (fine: number) => {
+    if (fine === 0) return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
+    if (fine < 10000) return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
+    return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+  };
 
   const fetchBooks = async () => {
     try {
@@ -228,6 +270,8 @@ export default function BorrowPage() {
       </div>
     );
 
+  const borrowingHistory = requests.filter((r) => r.status === "approved" && r.returnDate);
+
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
       <div className="flex items-center justify-between">
@@ -237,6 +281,35 @@ export default function BorrowPage() {
         </h1>
       </div>
 
+      {/* Tab Navigation */}
+      {userRole !== "admin" && (
+        <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setActiveTab("requests")}
+            className={`px-6 py-3 font-semibold transition ${
+              activeTab === "requests"
+                ? "text-blue-600 border-b-2 border-blue-600"
+                : "text-gray-600 dark:text-gray-400"
+            }`}
+          >
+            Daftar Peminjaman
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`px-6 py-3 font-semibold transition ${
+              activeTab === "history"
+                ? "text-blue-600 border-b-2 border-blue-600"
+                : "text-gray-600 dark:text-gray-400"
+            }`}
+          >
+            Riwayat Peminjaman
+          </button>
+        </div>
+      )}
+
+      {/* Show requests table only when in requests tab (or admin view) */}
+      {(activeTab === "requests" || userRole === "admin") && (
+      <>
       {/* Search and Filter - Both Admin and Member */}
       {(userRole === "admin" || userRole !== "admin") && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-4">
@@ -563,6 +636,54 @@ export default function BorrowPage() {
             );
             })}
           </div>
+        </>
+      )}
+      </>
+      )}
+
+      {/* Borrowing History Tab */}
+      {activeTab === "history" && userRole !== "admin" && (
+        <>
+          {borrowingHistory.length === 0 ? (
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
+              <p className="text-gray-500 dark:text-gray-400">Belum ada riwayat peminjaman</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {borrowingHistory.map((req) => {
+                const fine = calculateFine(req.borrowDate, req.returnDate);
+                return (
+                  <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Judul Buku</p>
+                        <p className="font-semibold text-gray-900 dark:text-white">{req.book.title}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{req.book.author}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanggal Peminjaman</p>
+                        <p className="font-semibold text-gray-900 dark:text-white">
+                          {new Date(req.borrowDate).toLocaleDateString("id-ID")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanggal Pengembalian</p>
+                        <p className="font-semibold text-gray-900 dark:text-white">
+                          {req.returnDate ? new Date(req.returnDate).toLocaleDateString("id-ID") : "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Denda</p>
+                        <p className={`font-semibold px-3 py-1 rounded-full w-fit ${getFineColor(fine)}`}>
+                          Rp {fine.toLocaleString("id-ID")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
     </div>
