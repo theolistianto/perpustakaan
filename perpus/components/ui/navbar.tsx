@@ -36,13 +36,11 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { label: "E-Catalog", href: "/e-catalog" },
     ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : [
       { label: "Beranda", href: "/" },
       { label: "Cara Meminjam", href: "/panduan/meminjam" },
     ]),
-    { label: "Tentang", href: "#about" },
-    { label: "Buku", href: "#books" },
+    { label: "Buku", href: "/dashboard/books" },
   ];
 
   return (
@@ -55,7 +53,7 @@ export default function Navbar() {
               <Library className="w-5 h-5" />
             </div>
             <span className="text-gray-900 dark:text-white">
-              Perpus<span className="text-blue-600">System</span>
+              PERPUS<span className="text-blue-600">CISn>
             </span>
           </Link>
 
