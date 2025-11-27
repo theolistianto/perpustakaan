@@ -13,8 +13,9 @@ export default function LandingPage() {
     <div>
       <Navbar />
       
-      <section className="h-96 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
+      <section className="h-96 bg-cover bg-center relative" style={{ backgroundImage: "url('/library-hero.png')" }}>
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
           <h1 className="text-5xl font-bold text-white mb-4">Perpus System</h1>
           <p className="text-xl text-white/90 mb-8">Sistem Manajemen Perpustakaan Modern</p>
           
