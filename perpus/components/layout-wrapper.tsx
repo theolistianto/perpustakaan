@@ -10,8 +10,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   return (
     <div className="flex">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex-1">
-        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+      <div className="flex-1 flex flex-col">
+        {/* Navbar hanya muncul saat sidebar ditutup */}
+        <div className={`${sidebarOpen ? "hidden" : "block"}`}>
+          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        </div>
         {children}
       </div>
     </div>
