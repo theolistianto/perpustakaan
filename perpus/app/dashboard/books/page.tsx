@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { BookOpen, CheckCircle, Clock, XCircle } from "lucide-react";
+import { BookOpen, CheckCircle, Clock, XCircle, Plus } from "lucide-react";
 
 interface Book {
   id: number;
@@ -152,6 +152,14 @@ export default function BookCategoryPage() {
           <BookOpen className="w-8 h-8 text-blue-600" />
           Katalog Buku
         </h1>
+        {userRole === "admin" && (
+          <Link href="/dashboard/books/tambah">
+            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+              <Plus className="w-5 h-5" />
+              Tambahkan Buku
+            </button>
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-4 items-center">
