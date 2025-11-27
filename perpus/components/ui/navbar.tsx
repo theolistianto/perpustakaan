@@ -55,6 +55,7 @@ export default function Navbar() {
 
   const menuItems = [
     ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : [
+      { label: "Peminjaman Saya", href: "/dashboard/borrow" },
       { label: "Cara Meminjam", href: "/panduan/meminjam" },
     ]),
     { label: "Buku", href: "/dashboard/books" },
