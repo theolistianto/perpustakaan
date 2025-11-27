@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Library, Menu, X, LogOut, ChevronDown } from "lucide-react";
+import { Library, Menu, X, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const [userUsername, setUserUsername] = useState<string | null>(null);
@@ -35,14 +34,8 @@ export default function Navbar() {
     window.location.reload();
   };
 
-  const eCatalogItems = [
-    { label: "Book", href: "/e-catalog/book" },
-    { label: "Cara Meminjam", href: "/e-catalog/cara-meminjam" },
-    { label: "Katalog", href: "/e-catalog/katalog" },
-    { label: "Informasi", href: "/e-catalog/informasi" },
-  ];
-
   const menuItems = [
+    { label: "E-Catalog", href: "/e-catalog" },
     ...(userRole === "admin" ? [{ label: "Setting", href: "/dashboard/settings" }] : []),
     { label: "Tentang", href: "#about" },
     { label: "Buku", href: "#books" },
@@ -73,24 +66,6 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-            
-            {/* E-Catalog Dropdown */}
-            <div className="relative group">
-              <button className="flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition font-medium">
-                E-Catalog <ChevronDown className="w-4 h-4" />
-              </button>
-              <div className="absolute left-0 mt-0 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                {eCatalogItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg transition"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Login/Logout Section */}
