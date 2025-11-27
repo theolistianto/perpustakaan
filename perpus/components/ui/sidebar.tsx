@@ -1,5 +1,5 @@
 "use client";
-import { BookOpen, LogOut, Settings, Home, HelpCircle, X, BarChart3, Users } from "lucide-react";
+import { BookOpen, LogOut, Settings, Home, HelpCircle, X, BarChart3, Users, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -12,13 +12,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const router = useRouter();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userUsername, setUserUsername] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     const username = localStorage.getItem("userUsername");
     setUserRole(role);
     setUserUsername(username);
+
+    // Check dark mode from document
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    setIsDark(isDarkMode);
   }, []);
+
+  const toggleDarkMode = () => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    if (isDarkMode) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDark(true);
+    }
+  };
 
   const adminMenuItems = [
     { icon: Home, label: "Beranda", path: "/" },
@@ -121,15 +139,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Logout Button */}
+        {/* Logout Button & Dark Mode Toggle */}
         {userRole && (
-          <div className="p-6 border-t border-gray-800">
+          <div className="p-6 border-t border-gray-800 space-y-3">
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition"
             >
               <LogOut className="w-4 h-4" />
               Logout
+            </button>
+            <button
+              onClick={toggleDarkMode}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition"
+            >
+              {isDark ? (
+                <>
+                  <Sun className="w-4 h-4" />
+                  Light Mode
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4" />
+                  Dark Mode
+                </>
+              )}
             </button>
           </div>
         )}
