@@ -57,13 +57,6 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
     <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Hamburger Menu - Desktop */}
-          <button
-            onClick={handleMenuClick}
-            className="hidden lg:block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
