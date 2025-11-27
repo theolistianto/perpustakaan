@@ -165,6 +165,20 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
+            
+            {/* Dark Mode Toggle - Mobile */}
+            <button
+              onClick={toggleDarkMode}
+              className="w-full px-4 py-2 flex items-center justify-between text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <span>{isDark ? "Mode Gelap" : "Mode Terang"}</span>
+              {isDark ? (
+                <Sun className="w-5 h-5 text-yellow-600" />
+              ) : (
+                <Moon className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
+            
             {userRole ? (
               <>
                 <div className="px-4 py-2 text-sm">
