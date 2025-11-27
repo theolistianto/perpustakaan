@@ -131,6 +131,28 @@ This endpoint creates:
 - 4 sample shelves (Rak A, Rak B, Rak C, Rak D)
 - 2 sample books for reference
 
+## Recent Changes (November 27, 2025)
+
+### Comprehensive Fine (Denda) System ✅
+- ✅ **FineSettings Model** - Added database table for managing denda configurations
+- ✅ **Fine Settings API** (`/api/fine-settings`) - GET and PATCH endpoints to manage denda settings
+- ✅ **Calculate Fine API** (`/api/borrow/calculate-fine`) - Calculate denda berdasarkan keterlambatan
+- ✅ **Denda Settings Page** (`/dashboard/settings/denda`) - Admin dapat mengatur:
+  - Denda per 7 hari (Rp 100 - Rp 100.000, default: Rp 1.000)
+  - Maksimal denda (Rp 100.000 - Rp 1.000.000, default: Rp 50.000)
+  - Settings disimpan ke database (bukan localStorage)
+- ✅ **Denda Column di Table Peminjam** - `/dashboard/peminjam` menampilkan kolom "Denda" dengan:
+  - Perhitungan otomatis: (Hari Terlambat ÷ 7) × Denda per 7 hari
+  - Maksimal denda tidak boleh lebih dari setting
+  - Denda Rp 0 jika buku sudah dikembalikan (returnDate ada)
+  - Color coding: Merah (ada denda) / Hijau (tidak ada)
+  - Responsive desktop table + mobile cards
+- ✅ **Contoh Halaman Denda** (`/contoh-denda`) - Halaman public menunjukkan contoh table dengan denda
+- ✅ **Admin Navbar** - "Cara Meminjam" ditambahkan ke menu admin
+- ✅ **Mobile Dark Mode Toggle** - Dark mode toggle sekarang tersedia di mobile menu hamburger
+- ✅ **Text Change** - "Tentang Kami" → "PERPUSTAKAAN"
+- ✅ **Port Configuration** - Server running di port 5000 dengan proper host binding
+
 ## Recent Changes (November 26, 2025)
 
 ### Navbar & Borrow Table Visibility Fixes ✅
