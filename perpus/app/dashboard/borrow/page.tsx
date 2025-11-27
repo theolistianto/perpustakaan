@@ -665,9 +665,9 @@ export default function BorrowPage() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanggal Pengembalian</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Batas Pengembalian</p>
                         <p className="font-semibold text-gray-900 dark:text-white">
-                          {req.returnDate ? new Date(req.returnDate).toLocaleDateString("id-ID") : "-"}
+                          {req.dueDate ? new Date(req.dueDate).toLocaleDateString("id-ID") : "-"}
                         </p>
                       </div>
                       <div>
