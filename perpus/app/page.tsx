@@ -94,7 +94,7 @@ export default function LandingPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div className="hidden md:grid grid-cols-4 gap-6 mb-8">
                 {books.map((book) => (
                   <div key={book.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
                     <div className="bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
@@ -113,6 +113,29 @@ export default function LandingPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="md:hidden overflow-x-auto pb-4 mb-8 -mx-4 px-4">
+                <div className="flex gap-6" style={{ width: 'max-content' }}>
+                  {books.map((book) => (
+                    <div key={book.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition flex-shrink-0" style={{ width: '200px' }}>
+                      <div className="bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
+                        {book.image ? (
+                          <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <BookOpen className="w-12 h-12 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 text-sm">{book.title}</h3>
+                        <p className="text-xs text-gray-600 mb-3">{book.author}</p>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Stok: {book.stock}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="text-center">
                 <button
