@@ -37,12 +37,16 @@ export default function ECatalogPage() {
       <Navbar />
       
       {/* Hero Section with Background Image */}
-      <section className="h-80 bg-cover bg-center relative" style={{ backgroundImage: "url('/e-catalog-hero.png')" }}></section>
+      <section className="py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="h-96 bg-cover bg-center rounded-3xl" style={{ backgroundImage: "url('/e-catalog-hero.png')" }}></div>
+        </div>
+      </section>
 
       {/* Catalog Items */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {catalogItems.map((item) => {
               const Icon = item.icon;
               return (
