@@ -31,7 +31,6 @@ export default function BookCategoryPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -113,16 +112,8 @@ export default function BookCategoryPage() {
       filtered = filtered.filter((b) => b.categoryId === selectedCategory);
     }
 
-    if (search) {
-      filtered = filtered.filter(
-        (b) =>
-          b.title.toLowerCase().includes(search.toLowerCase()) ||
-          b.author.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
     setFilteredBooks(filtered);
-  }, [selectedCategory, search, books]);
+  }, [selectedCategory, books]);
 
   const getStatusIcon = (status: string) => {
     if (status === "pending") return <Clock className="w-4 h-4 text-yellow-600" />;
@@ -155,14 +146,6 @@ export default function BookCategoryPage() {
       </div>
 
       <div className="flex flex-wrap gap-4 items-center">
-        <input
-          type="text"
-          placeholder="Cari buku atau pengarang..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-300 dark:border-gray-600 p-3 rounded-lg flex-1 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
         {categories.map((cat) => (
           <button
             key={cat.id}
