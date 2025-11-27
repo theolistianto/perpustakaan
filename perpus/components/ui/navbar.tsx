@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Library, LogOut } from "lucide-react";
+import { Library, LogOut, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -32,6 +32,8 @@ export default function Navbar() {
     router.push("/auth/signup");
     window.location.reload();
   };
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     { label: "E-Catalog", href: "/e-catalog" },
@@ -102,7 +104,60 @@ export default function Navbar() {
               Masuk
             </Link>
           )}
+
+          {/* Mobile Menu Button - Android/iOS Only */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden text-gray-700 dark:text-gray-300"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="lg:hidden pb-4 border-t border-gray-200 dark:border-gray-800">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              >
+                {item.label}
+              </Link>
+            ))}
+            {userRole ? (
+              <>
+                <div className="px-4 py-2 text-sm">
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {userUsername || "User"}
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {userRole === "admin" ? "Admin" : "Pengunjung"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/auth/login"
+                onClick={() => setIsOpen(false)}
+                className="w-full mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition block text-center"
+              >
+                Masuk
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </nav>
   );
