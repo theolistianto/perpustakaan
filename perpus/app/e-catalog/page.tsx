@@ -36,20 +36,11 @@ export default function ECatalogPage() {
     <div>
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="h-80 bg-gradient-to-r from-blue-600 to-blue-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center items-center text-center relative z-10">
-          <h1 className="text-5xl font-bold text-white mb-4">E - Katalog</h1>
-          <h2 className="text-4xl font-bold text-white mb-6">Perpustakaan BPOM</h2>
-          <p className="text-xl text-white/90">
-            Akses untuk mengetahui informasi<br/>koleksi melalui katalog online
-          </p>
-        </div>
-      </section>
+      {/* Hero Section with Background Image */}
+      <section className="h-80 bg-cover bg-center relative" style={{ backgroundImage: "url('/e-catalog-hero.png')" }}></section>
 
       {/* Catalog Items */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {catalogItems.map((item) => {
