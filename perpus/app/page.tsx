@@ -53,12 +53,6 @@ export default function LandingPage() {
           <p className="text-lg text-gray-600 mb-4">
             Perpus System adalah platform manajemen perpustakaan modern yang dirancang untuk memudahkan pengelolaan koleksi buku.
           </p>
-          <button
-            onClick={() => router.push("/dashboard/books")}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold flex items-center gap-2"
-          >
-            Jelajahi Katalog <ArrowRight className="w-5 h-5" />
-          </button>
         </div>
       </section>
 
