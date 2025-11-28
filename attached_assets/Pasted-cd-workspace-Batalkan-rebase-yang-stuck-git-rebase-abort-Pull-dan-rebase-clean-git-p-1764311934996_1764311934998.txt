@@ -1,0 +1,56 @@
+cd ~/workspace
+
+# Batalkan rebase yang stuck
+git rebase --abort
+
+# Pull dan rebase clean
+git pull --rebase origin main
+
+# Cek status
+git status
+
+# Push
+git push origin main
+fatal: no rebase in progress
+From https://github.com/theolistianto/perpustakaan
+ * branch            main       -> FETCH_HEAD
+Auto-merging perpus/app/auth/login/page.tsx
+CONFLICT (content): Merge conflict in perpus/app/auth/login/page.tsx
+CONFLICT (modify/delete): replit.md deleted in HEAD and modified in da6203a (Remove shield icons from login and demo accounts).  Version da6203a (Remove shield icons from login and demo accounts) of replit.md left in tree.
+error: could not apply da6203a... Remove shield icons from login and demo accounts
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply da6203a... # Remove shield icons from login and demo accounts
+interactive rebase in progress; onto bc564b5
+Last command done (1 command done):
+   pick da6203a # Remove shield icons from login and demo accounts
+Next commands to do (4 remaining commands):
+   pick f59aa19 # Add borrow and due dates to the admin borrowing table
+   pick 28fea07 # Remove hash symbol from user IDs in tables
+  (use "git rebase --edit-todo" to view and edit)
+You are currently rebasing branch 'main' on 'bc564b5'.
+  (fix conflicts and then run "git rebase --continue")
+  (use "git rebase --skip" to skip this patch)
+  (use "git rebase --abort" to check out the original branch)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+    modified:   .replit
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add/rm <file>..." as appropriate to mark resolution)
+    both modified:   perpus/app/auth/login/page.tsx
+    deleted by us:   replit.md
+
+To https://github.com/theolistianto/perpustakaan.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/theolistianto/perpustakaan.git'
+hint: Updates were rejected because a pushed branch tip is behind its remote
+hint: counterpart. If you want to integrate the remote changes, use 'git pull'
+hint: before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+~/workspace$ 
