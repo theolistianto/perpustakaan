@@ -321,7 +321,7 @@ export default function PeminjamPage() {
                     className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
                   >
                     <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
-                      #{req.id}
+                      {req.id}
                     </td>
                     <td className="py-4 px-6 text-gray-900 dark:text-white font-medium">
                       {req.book.title}
@@ -391,7 +391,7 @@ export default function PeminjamPage() {
             {filteredRequests.map((req) => (
               <div key={req.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">ID: #{req.id}</p>
+                  <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">ID: {req.id}</p>
                   <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{req.book.title}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{req.book.author}</p>
                 </div>
