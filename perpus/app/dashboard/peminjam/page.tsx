@@ -301,6 +301,12 @@ export default function PeminjamPage() {
                     Email
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Waktu Awal Meminjam
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
+                    Batas Peminjaman
+                  </th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
                     Denda
                   </th>
                   <th className="text-left py-4 px-6 font-semibold text-gray-900 dark:text-white">
@@ -328,6 +334,12 @@ export default function PeminjamPage() {
                     </td>
                     <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
                       {req.user.email}
+                    </td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white text-sm">
+                      {new Date(req.borrowDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white text-sm">
+                      {new Date(req.dueDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
                     <td className="py-4 px-6">
                       {fines[req.id] ? (
@@ -390,6 +402,12 @@ export default function PeminjamPage() {
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 break-all">
                     <span className="font-semibold">Email:</span> {req.user.email}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-semibold">Waktu Awal Meminjam:</span> {new Date(req.borrowDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-semibold">Batas Peminjaman:</span> {new Date(req.dueDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}
                   </p>
                   <p className="text-sm">
                     <span className="font-semibold text-gray-600 dark:text-gray-400">Denda:</span>{" "}

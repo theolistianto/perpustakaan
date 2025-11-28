@@ -36,3 +36,18 @@ The application is built with Next.js 15.2.0 (App Router), TypeScript, React 19,
 - **Database**: Neon PostgreSQL
 - **ORM**: Prisma
 - **UI Primitives**: Radix UI
+
+## Recent Changes (November 28, 2025)
+
+### UI Polish - Remove Shield Icons ✅
+- ✅ **Removed Shield Icon** from "Masuk" button in auth/login - now shows text only
+- ✅ **Demo Account Icons** - Changed from Shield icon to initials (P for Pengunjung, A for Admin)
+
+### Browser Tab Title ✅
+- ✅ **Updated Page Title** - Changed from "PERPUSCIS - Sistem Manajemen Perpustakaan Digital" to just "PERPUSCIS"
+
+### Admin Dashboard - Borrowing Table Enhancement ✅
+- ✅ **New Column: "Waktu Awal Meminjam"** - Shows borrow date (borrowDate) with Indonesian format
+- ✅ **New Column: "Batas Peminjaman"** - Shows due date (dueDate) with Indonesian format
+- ✅ **Mobile Support:** Card view also displays both dates
+- ✅ **Location:** `/dashboard/peminjam` (Admin borrowing requests management page)
