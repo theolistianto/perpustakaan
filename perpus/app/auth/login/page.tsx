@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Lock, Shield, BookOpen, AlertCircle } from "lucide-react";
+import { User, Lock, BookOpen, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -174,10 +174,7 @@ export default function LoginPage() {
                     Sedang login...
                   </>
                 ) : (
-                  <>
-                    <Shield className="w-5 h-5" />
-                    Masuk
-                  </>
+                  <>Masuk</>
                 )}
               </button>
 
@@ -206,12 +203,12 @@ export default function LoginPage() {
                     onClick={() => quickLogin(account.username, account.password, account.role)}
                   >
                     <div className="flex items-start gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-white ${
                         account.role === "admin"
                           ? "bg-purple-400"
                           : "bg-blue-400"
                       }`}>
-                        <Shield className="w-6 h-6 text-white" />
+                        {account.role === "admin" ? "A" : "P"}
                       </div>
                       <div className="flex-1">
                         <p className="font-bold">
