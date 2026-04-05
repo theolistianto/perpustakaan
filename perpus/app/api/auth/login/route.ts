@@ -10,19 +10,17 @@ export async function POST(req: NextRequest) {
   try {
     const { username, password, role } = await req.json();
 
-    // Try to find existing user by username
     let user = await prisma.user.findUnique({ where: { username } });
 
-    // If user doesn't exist, create demo accounts
     if (!user) {
-      if (username === "admin" && password === "admin123" && role === "admin") {
+      if (username === "theo" && password === "theoo123" && role === "admin") {
         user = await prisma.user.create({
           data: {
             email: "admin@perpus.id",
             password: hashPassword(password),
             role: "admin",
             name: "Administrator",
-            username: "admin",
+            username: "theo",
             displayUserId: generateRandomId(),
           },
         });
@@ -44,7 +42,7 @@ export async function POST(req: NextRequest) {
         );
       }
     } else {
-      // Verify existing user
+     
       if (!comparePassword(password, user.password) || user.role !== role) {
         return NextResponse.json(
           { error: "Username atau password salah" },

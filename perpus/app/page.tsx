@@ -24,7 +24,7 @@ export default function LandingPage() {
         const res = await fetch("/api/books");
         if (res.ok) {
           const data = await res.json();
-          setBooks(data.slice(0, 4));
+          setBooks(data.slice(0, 8));
         }
       } catch (error) {
         console.error("Failed to fetch books:", error);

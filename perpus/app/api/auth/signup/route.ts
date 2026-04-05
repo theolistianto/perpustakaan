@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
   try {
     const { username, email, password } = await req.json();
 
-    // Check if username already exists
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
       return NextResponse.json(
@@ -19,7 +18,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if email already exists
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail) {
       return NextResponse.json(
@@ -28,7 +26,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create new member user (visitor/member only, not admin)
     const user = await prisma.user.create({
       data: {
         username,
