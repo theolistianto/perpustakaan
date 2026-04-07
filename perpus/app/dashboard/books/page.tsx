@@ -46,31 +46,43 @@ export default function BookCategoryPage() {
     { id: 3, name: "Teknologi" },
   ];
 
+  // ================= FETCH BOOKS =================
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch("/api/books");
+      if (response.ok) {
+        const data = await response.json();
+        setBooks(data);
+        setFilteredBooks(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch books:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ================= LOAD AWAL =================
   useEffect(() => {
     const role = localStorage.getItem("userRole");
     const email = localStorage.getItem("userEmail");
     setUserRole(role);
     setUserEmail(email);
 
-    const fetchBooks = async () => {
-      try {
-        const response = await fetch("/api/books");
-        if (response.ok) {
-          const data = await response.json();
-          setBooks(data);
-          setFilteredBooks(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch books:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBooks();
+
     if (role === "member") {
       fetchBorrowRequests();
     }
+  }, []);
+
+  // ================= AUTO REFRESH =================
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchBooks();
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchBorrowRequests = async () => {
@@ -145,6 +157,7 @@ export default function BookCategoryPage() {
     if (status === "rejected") return "Ditolak";
     return status;
   };
+
 
   return (
     <div className="max-w-7xl mx-auto p-4 font-sans space-y-6">

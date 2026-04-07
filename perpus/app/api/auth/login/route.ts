@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       if (username === "theo" && password === "theoo123" && role === "admin") {
         user = await prisma.user.create({
           data: {
-            email: "admin@perpus.id",
+            email: "theo@perpus.id",
             password: hashPassword(password),
             role: "admin",
             name: "Administrator",
